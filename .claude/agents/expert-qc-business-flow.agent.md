@@ -46,5 +46,6 @@ Always summarize:
 3. traceability status
 4. gaps, questions, or assumptions
 5. Mermaid output status
-6. blockers
-7. next smallest QC recommendation
+6. verification status
+7. blockers
+8. next smallest QC recommendation

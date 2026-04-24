@@ -9,6 +9,7 @@ This repository is a spec-first QC tool for clarifying requirements and generati
 - extract a trustworthy business flow
 - surface ambiguity, gaps, and assumptions clearly
 - generate a traceable Mermaid diagram from the extracted flow
+- verify the final artifact pack one more time before treating it as review-ready
 
 ## Commands
 
@@ -54,6 +55,12 @@ tests/pipeline.test.ts       # end-to-end heuristic smoke test
 - Prefer `Unknown / needs confirmation` over guessing.
 - Keep wording close to the source unless very light normalization is needed.
 - Every table row and Mermaid node must have traceability.
+
+## Preferred roles
+
+- primary analyst: read specs and produce the business-flow pack
+- verifier: review the produced pack for evidence, consistency, and unsupported inference
+- do not drift into unrelated implementation work unless explicitly requested
 
 ## Out of scope by default
 

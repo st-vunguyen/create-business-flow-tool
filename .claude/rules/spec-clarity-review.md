@@ -12,6 +12,8 @@ For each spec corpus, try to extract:
 - exceptions or alternate flows
 - system touchpoints
 - expected outcomes
+- terminology that should remain close to the source
+- spreadsheet metadata that can enrich touchpoints or expected outcomes
 
 ## Ambiguity handling
 
@@ -27,3 +29,4 @@ For each spec corpus, try to extract:
 - Exceptions should only appear when the source mentions a failure or alternate path.
 - Narrative text must not introduce new facts beyond the table.
 - Final wording must be English only and easy for business stakeholders to review.
+- If spreadsheet columns provide stronger touchpoint or outcome wording, prefer them over weaker sentence inference.

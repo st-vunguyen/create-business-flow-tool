@@ -14,13 +14,15 @@ Apply this rule whenever the task creates, reviews, or edits Mermaid business-fl
 - Use a restrained color palette with semantic meaning.
 - Do not use emoji or playful labels.
 - Keep the main flow visually dominant and easy to follow.
+- Follow the class names and init block defined in `src/core/mermaid-style.ts`.
+- Use fallback swimlane messaging when ownership evidence is insufficient.
 
 ## Required references
 
-- `docs/mermaid-visual-standard.md`
-- `docs/mermaid-icon-library.md`
+- `src/core/mermaid-style.ts`
 - `assets/mermaid-icons/`
 
-## Compatibility rule
+## Verification rule
 
-Keep Mermaid diagrams text-first for renderer compatibility. SVG icons are companion assets for exported documentation and design-system use unless the runtime explicitly supports Mermaid image or icon nodes.
+- Mermaid labels must not introduce facts, actors, or branch outcomes that the analysis document does not support.
+- If swimlane ownership is uncertain, use the fallback note instead of a guessed lane assignment.
