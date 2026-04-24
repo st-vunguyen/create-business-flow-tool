@@ -1,0 +1,55 @@
+{
+  "env": {
+    "NODE_ENV": "development",
+    "FORCE_COLOR": "1",
+    "KIT_PRODUCT_NAME": "expert-qc-business-flow",
+    "KIT_SCOPE": "expert-qc"
+  },
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "Bash(cat*)",
+      "Bash(ls*)",
+      "Bash(find*)",
+      "Bash(grep*)",
+      "Bash(head*)",
+      "Bash(tail*)",
+      "Bash(wc*)",
+      "Bash(echo*)",
+      "Bash(mkdir*)",
+      "Bash(cp*)",
+      "Bash(mv*)",
+      "Bash(touch*)",
+      "Bash(pwd)",
+      "Bash(which*)",
+      "Bash(env*)",
+      "Bash(sort*)",
+      "Bash(uniq*)",
+      "Bash(diff*)",
+      "Bash(jq*)",
+      "Bash(node *)",
+      "Bash(pnpm *)",
+      "Bash(git status*)",
+      "Bash(git diff*)"
+    ],
+    "deny": [
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~*)",
+      "Bash(sudo*)",
+      "Bash(chmod 777*)",
+      "Bash(shutdown*)",
+      "Bash(reboot*)",
+      "Bash(docker system prune*)",
+      "Bash(docker compose down -v*)",
+      "Bash(git push*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -fd*)",
+      "Bash(npm *)",
+      "Bash(npx *)"
+    ]
+  },
+  "enabledPlugins": {},
+  "plansDirectory": ".claude/plans"
+}

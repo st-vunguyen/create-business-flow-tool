@@ -1,0 +1,4 @@
+Step,Touchpoint,Expected outcome
+Open checkout page,UI page,Checkout page is available
+Submit payment,Payment API,Payment is authorized
+Create order,Order service,Order is created successfully

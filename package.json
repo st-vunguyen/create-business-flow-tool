@@ -1,0 +1,28 @@
+{
+  "name": "create-business-flow-tool",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "CLI tool to normalize multi-format specs, generate business-flow documents, and convert them to Mermaid diagrams.",
+  "bin": {
+    "business-flow-tool": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "tool": "tsx src/cli.ts",
+    "test": "node --test --import tsx tests/**/*.test.ts"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "fast-glob": "^3.3.3",
+    "mammoth": "^1.9.1",
+    "pdf-parse": "^1.1.1",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}

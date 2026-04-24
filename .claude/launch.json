@@ -1,0 +1,47 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "QC Doctor",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["run", "tool", "--", "doctor"]
+    },
+    {
+      "name": "QC Prompt Dry Run",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "run",
+        "tool",
+        "--",
+        "run",
+        "--spec-dir",
+        "tests/fixtures/specs/sample",
+        "--slug",
+        "sample-checkout",
+        "--output-root",
+        "business-flow",
+        "--mode",
+        "dry-run"
+      ]
+    },
+    {
+      "name": "QC Heuristic Sample Run",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "run",
+        "tool",
+        "--",
+        "run",
+        "--spec-dir",
+        "tests/fixtures/specs/sample",
+        "--slug",
+        "sample-checkout",
+        "--output-root",
+        "business-flow",
+        "--mode",
+        "heuristic"
+      ]
+    }
+  ],
+  "autoVerify": true
+}
