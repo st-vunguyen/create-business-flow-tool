@@ -1,5 +1,10 @@
 export const MERMAID_VISUAL_STANDARD_PATH = "docs/mermaid-visual-standard.md";
-export const MERMAID_ICON_LIBRARY_PATH = "docs/mermaid-icon-library.md";
+export const MERMAID_ICON_LIBRARY_PATH = "docs/icons/mermaid-icon-library.md";
+export const MERMAID_ICON_GUIDELINES_PATH = "docs/icons/mermaid-icon-guidelines.md";
+export const MERMAID_ICON_CATALOG_PATH = "docs/icons/mermaid-icon-catalog.md";
+export const MERMAID_ICON_TAXONOMY_PATH = "assets/mermaid-icons/semantic-icon-taxonomy.json";
+export const MERMAID_ICON_PHYSICAL_LIBRARY_PATH = "assets/mermaid-icons/library";
+export const MERMAID_EXTENDED_ICON_TOKEN_COUNT = 1440;
 
 export const MERMAID_INIT_BLOCK = `%%{init: {"theme":"base","flowchart":{"htmlLabels":false,"curve":"basis","nodeSpacing":32,"rankSpacing":44,"padding":20},"themeVariables":{"fontFamily":"Inter, Arial, sans-serif","fontSize":"14px","primaryColor":"#EFF6FF","primaryTextColor":"#0F172A","primaryBorderColor":"#2563EB","lineColor":"#475569","secondaryColor":"#F8FAFC","tertiaryColor":"#FFF7ED"},"themeCSS":".node rect, .node polygon, .node path, .node circle, .node ellipse { rx: 6px; ry: 6px; } .node text, .label text, .edgeLabel { font-family: Inter, Arial, sans-serif; font-size: 14px; fill: #0F172A; } .edgeLabel { background-color: #FFFFFF; } .cluster rect { rx: 8px; ry: 8px; fill: #F8FAFC; stroke: #CBD5E1; stroke-width: 1.5px; }"}}%%`;
 
@@ -18,7 +23,7 @@ export const MERMAID_VISUAL_STANDARD_LINES = [
   "- Color system: Blue for process, amber for decisions, red for exceptions, gray for external/system-owned activity, cyan for start/end.",
   "- Typography: Sans-serif, 14px minimum, no emoji, no slang, no decorative wording.",
   "- Edge emphasis: The happy path uses thicker blue links; alternate or unresolved branches use neutral or red links.",
-  `- References: \`${MERMAID_VISUAL_STANDARD_PATH}\` and \`${MERMAID_ICON_LIBRARY_PATH}\`.`,
+  `- References: \`${MERMAID_VISUAL_STANDARD_PATH}\`, \`${MERMAID_ICON_LIBRARY_PATH}\`, \`${MERMAID_ICON_GUIDELINES_PATH}\`, and \`${MERMAID_ICON_CATALOG_PATH}\`.`,
 ];
 
 export const MERMAID_ICON_LIBRARY = [
@@ -31,7 +36,13 @@ export const MERMAID_ICON_LIBRARY = [
 ] as const;
 
 export function renderMermaidIconLines(): string[] {
-  return MERMAID_ICON_LIBRARY.map((icon) => `- \`${icon.key}\` → \`${icon.file}\` (${icon.usage})`);
+  return [
+    ...MERMAID_ICON_LIBRARY.map((icon) => `- \`${icon.key}\` → \`${icon.file}\` (${icon.usage})`),
+    `- Extended semantic registry: \`${MERMAID_EXTENDED_ICON_TOKEN_COUNT.toLocaleString("en-US")}\` icon tokens using \`<domain>.<object>.<state>\`; see \`${MERMAID_ICON_LIBRARY_PATH}\`.`,
+    `- Machine-readable taxonomy: \`${MERMAID_ICON_TAXONOMY_PATH}\`.`,
+    `- Physical SVG library: \`${MERMAID_ICON_PHYSICAL_LIBRARY_PATH}\`.`,
+    `- Selection guide: \`${MERMAID_ICON_GUIDELINES_PATH}\`.`,
+  ];
 }
 
 export function buildFallbackSwimlaneDiagram(message: string): string {

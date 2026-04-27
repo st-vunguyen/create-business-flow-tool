@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="customer-record-rejected-title customer-record-rejected-desc">
+  <title id="customer-record-rejected-title">customer.record.rejected</title>
+  <desc id="customer-record-rejected-desc">Customer Record in Rejected state. Suggested Mermaid class: external. Fallback export icon: assets/mermaid-icons/data-store.svg.</desc>
+  <defs>
+    <linearGradient id="customer-record-rejected-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#CCFBF1" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#e0fdf7"/>
+    </linearGradient>
+    <linearGradient id="customer-record-rejected-accent" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F766E"/>
+      <stop offset="1" stop-color="#0D9488"/>
+    </linearGradient>
+    <filter id="customer-record-rejected-shadow" x="2" y="2" width="60" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  <g filter="url(#customer-record-rejected-shadow)">
+    <!-- Base App-Style Squircle -->
+    <rect x="6" y="6" width="52" height="52" rx="16" fill="url(#customer-record-rejected-bg)" stroke="#0D9488" stroke-width="1.5" stroke-opacity="0.3"/>
+    
+    <!-- Central Glyph (Scaled UP!) -->
+    <g transform="translate(-14.4, -14.4) scale(1.45)">
+      <ellipse cx="32" cy="22" rx="11" ry="4.5" stroke="#0F766E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M21 22V38C21 40.5 25.9 43 32 43C38.1 43 43 40.5 43 38V22" stroke="#0F766E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M21 30C21 32.5 25.9 35 32 35C38.1 35 43 32.5 43 30" stroke="#0F766E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+
+    <!-- State Badge (Bottom Right to not overlap glyph center) -->
+    <g transform="translate(50, 50)">
+      <circle cx="0" cy="0" r="10" fill="#FFFFFF" stroke="#FECACA" stroke-width="1.5"/>
+      <path d="M-3 -3L3 3M3 -3L-3 3" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>

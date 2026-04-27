@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="finance-review-completed-title finance-review-completed-desc">
+  <title id="finance-review-completed-title">finance.review.completed</title>
+  <desc id="finance-review-completed-desc">Finance Review in Completed state. Suggested Mermaid class: process. Fallback export icon: assets/mermaid-icons/process.svg.</desc>
+  <defs>
+    <linearGradient id="finance-review-completed-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DCFCE7" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#eafdf1"/>
+    </linearGradient>
+    <linearGradient id="finance-review-completed-accent" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F766E"/>
+      <stop offset="1" stop-color="#16A34A"/>
+    </linearGradient>
+    <filter id="finance-review-completed-shadow" x="2" y="2" width="60" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  <g filter="url(#finance-review-completed-shadow)">
+    <!-- Base App-Style Squircle -->
+    <rect x="6" y="6" width="52" height="52" rx="16" fill="url(#finance-review-completed-bg)" stroke="#16A34A" stroke-width="1.5" stroke-opacity="0.3"/>
+    
+    <!-- Central Glyph (Scaled UP!) -->
+    <g transform="translate(-14.4, -14.4) scale(1.45)">
+      <circle cx="28" cy="28" r="8" stroke="#0F766E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M34 34L42 42" stroke="#0F766E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M24.5 28.5L27.5 31.5L32 25.5" stroke="#0F766E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+
+    <!-- State Badge (Bottom Right to not overlap glyph center) -->
+    <g transform="translate(50, 50)">
+      <circle cx="0" cy="0" r="10" fill="#FFFFFF" stroke="#A5F3FC" stroke-width="1.5"/>
+      <path d="M-3.5 -0.5L-0.5 2.5L4 -2.5" stroke="#0891B2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

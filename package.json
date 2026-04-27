@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "generate:icons": "node tools/generate-semantic-icon-library.mjs",
     "lint": "tsc --noEmit -p tsconfig.json",
     "tool": "tsx src/cli.ts",
     "test": "node --test --import tsx tests/**/*.test.ts"

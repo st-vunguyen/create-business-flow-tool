@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="compliance-document-completed-title compliance-document-completed-desc">
+  <title id="compliance-document-completed-title">compliance.document.completed</title>
+  <desc id="compliance-document-completed-desc">Compliance Document in Completed state. Suggested Mermaid class: external. Fallback export icon: assets/mermaid-icons/data-store.svg.</desc>
+  <defs>
+    <linearGradient id="compliance-document-completed-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D1FAE5" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#e3fcef"/>
+    </linearGradient>
+    <linearGradient id="compliance-document-completed-accent" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F766E"/>
+      <stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+    <filter id="compliance-document-completed-shadow" x="2" y="2" width="60" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  <g filter="url(#compliance-document-completed-shadow)">
+    <!-- Base App-Style Squircle -->
+    <rect x="6" y="6" width="52" height="52" rx="16" fill="url(#compliance-document-completed-bg)" stroke="#059669" stroke-width="1.5" stroke-opacity="0.3"/>
+    
+    <!-- Central Glyph (Scaled UP!) -->
+    <g transform="translate(-14.4, -14.4) scale(1.45)">
+      <path d="M22 22H36L42 28V42H22Z" stroke="#0F766E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M36 22V28H42" stroke="#0F766E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M28 32H36" stroke="#0F766E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M28 38H36" stroke="#0F766E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+
+    <!-- State Badge (Bottom Right to not overlap glyph center) -->
+    <g transform="translate(50, 50)">
+      <circle cx="0" cy="0" r="10" fill="#FFFFFF" stroke="#A5F3FC" stroke-width="1.5"/>
+      <path d="M-3.5 -0.5L-0.5 2.5L4 -2.5" stroke="#0891B2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

@@ -1,4 +1,4 @@
-import type { AnalysisArtifact, BusinessFlowStep, ExtractedSource, MermaidArtifact, MermaidNodeTrace } from "../types.js";
+import type { AnalysisArtifact, BusinessFlowStep, CrossFlowImpactItem, ExtractedSource, GapItem, MermaidArtifact, MermaidIconSelection, MermaidNodeTrace } from "../types.js";
 import { compactLines, dedupe, titleCase } from "./utils.js";
 import {
   MERMAID_CLASS_DEFINITIONS,
@@ -6,6 +6,13 @@ import {
   escapeMermaidLabel,
   isExternalTouchpoint,
 } from "./mermaid-style.js";
+import { extractStateMachine } from "./state-machine.js";
+import { extractPermissions } from "./permissions.js";
+import { extractAsyncEvents } from "./async-model.js";
+import { scoreRisks } from "./risk.js";
+import { generateScenarioSeeds } from "./scenario-seeds.js";
+import { detectContradictions } from "./contradiction.js";
+import { loadDomainPack, getDomainGapItems } from "./domain-packs.js";
 
 const ACTOR_PATTERN = /\b(admin|administrator|user|customer|staff|manager|approver|reviewer|operator|guest|buyer|seller|agent|owner|system|service)\b/i;
 const DECISION_PATTERN = /\b(if|when|unless|whether|otherwise|approved|rejected|valid|invalid|eligible|ineligible|matched|mismatch|unavailable)\b/i;
@@ -70,6 +77,61 @@ export function buildHeuristicAnalysis(slug: string, sources: ExtractedSource[])
   const questions = buildQuestions(goal, actors, steps, decisions);
   const assumptions = buildAssumptions(actors, touchpoints, decisions);
 
+  // ── P0: Resolve domain and build domain-contextualized gap taxonomy ──────────
+  const resolvedDomain = resolveBusinessDomain({ topic, goal, trigger, outcomes, touchpoints, actors } as AnalysisArtifact);
+  const domainPack = loadDomainPack(resolvedDomain);
+  const corpus = [goal, trigger, ...outcomes, ...touchpoints, ...actors, ...steps.map((s) => `${s.action} ${s.notes}`)].join(" ");
+  const gaps: GapItem[] = [
+    ...buildTypedGaps(goal, actors, steps, decisions),
+    ...getDomainGapItems(domainPack, corpus),
+  ];
+
+  // Partial artifact for passing into dependent engines
+  const partialArtifact = {
+    topic, goal, trigger, outcomes, actors, touchpoints, steps, decisions, exceptions, domain: resolvedDomain,
+    gaps, questions, assumptions, narrative, scope: "", title: "", sourceFiles: sources.map((s) => s.relativePath),
+  } as AnalysisArtifact;
+
+  // ── P0: State machine extraction ─────────────────────────────────────────────
+  const stateMachine = extractStateMachine(sources, steps);
+
+  // ── P1: Permission analysis ───────────────────────────────────────────────────
+  const permissions = extractPermissions(sources, steps, actors);
+
+  // ── P1: Async event modeling ──────────────────────────────────────────────────
+  const { asyncEvents, externalDependencies } = extractAsyncEvents(sources, steps);
+
+  // ── P2: Contradiction detection ───────────────────────────────────────────────
+  const contradictions = detectContradictions(sources);
+  const enrichedGaps = dedupeGapItems([
+    ...gaps,
+    ...buildDerivedGapsFromAnalysis({
+      permissions,
+      asyncEvents,
+      stateMachine,
+      contradictions,
+      steps,
+    }),
+  ]);
+
+  // Build the enriched artifact for risk/scenario engines
+  const enrichedArtifact: AnalysisArtifact = {
+    ...partialArtifact,
+    domainPack: domainPack.name,
+    stateMachine,
+    permissions,
+    asyncEvents,
+    externalDependencies,
+    contradictions,
+    gaps: enrichedGaps,
+  };
+
+  // ── P1: Risk scoring ──────────────────────────────────────────────────────────
+  const risks = scoreRisks(enrichedArtifact);
+
+  // ── P1: Scenario seed generation ──────────────────────────────────────────────
+  const scenarios = generateScenarioSeeds({ ...enrichedArtifact, risks });
+
   return {
     title: `${topic} Business Flow Document`,
     topic,
@@ -86,6 +148,23 @@ export function buildHeuristicAnalysis(slug: string, sources: ExtractedSource[])
     exceptions,
     questions,
     assumptions,
+    gaps: enrichedGaps,
+    domain: resolvedDomain,
+    domainPack: domainPack.name,
+    stateMachine,
+    permissions,
+    asyncEvents,
+    externalDependencies,
+    risks,
+    scenarios,
+    contradictions,
+    crossFlowImpacts: buildCrossFlowImpacts({
+      domain: resolvedDomain,
+      asyncEvents,
+      externalDependencies,
+      permissions,
+      risks,
+    }),
   };
 }
 
@@ -93,6 +172,12 @@ export function buildHeuristicMermaid(analysis: AnalysisArtifact, includeSwimlan
   const traceability = buildTraceability(analysis.steps);
   const flowchart = buildFlowchartDiagram(analysis);
   const swimlane = includeSwimlane ? buildSwimlaneDiagram(analysis) : undefined;
+  const iconSelections = buildSemanticIconSelections(analysis);
+  const stateDiagram = analysis.stateMachine?.stateDiagram;
+
+  // Flatten typed gaps for backward-compatible mermaid gaps field
+  const gapStrings = (analysis.gaps ?? []).map((g) => `[${g.category}] ${g.description}`);
+  const fallbackGaps = analysis.questions.length > 0 ? analysis.questions : analysis.assumptions;
 
   return {
     facts: {
@@ -104,9 +189,166 @@ export function buildHeuristicMermaid(analysis: AnalysisArtifact, includeSwimlan
     },
     flowchart,
     swimlane,
+    stateDiagram,
+    iconSelections,
     traceability,
-    gaps: analysis.questions.length > 0 ? analysis.questions : analysis.assumptions,
+    gaps: gapStrings.length > 0 ? gapStrings : fallbackGaps,
   };
+}
+
+function buildSemanticIconSelections(analysis: AnalysisArtifact): MermaidIconSelection[] {
+  const selections = new Map<string, MermaidIconSelection>();
+  const domain = resolveBusinessDomain(analysis);
+
+  for (const step of analysis.steps) {
+    const object = resolveBusinessObject(step);
+    const state = resolveLifecycleState(step);
+    const mermaidClass = resolveSelectionClass(step);
+    const fallbackExportIcon = resolveFallbackExportIcon(mermaidClass);
+    const token = `${domain}.${object}.${state}`;
+
+    if (!selections.has(token)) {
+      selections.set(token, {
+        token,
+        mermaidClass,
+        fallbackExportIcon,
+        physicalSvgPath: `assets/mermaid-icons/library/${domain}/${token}.svg`,
+        reason: summarizeSelectionReason(step, domain, object, state),
+      });
+    }
+  }
+
+  return [...selections.values()].slice(0, 8);
+}
+
+function resolveBusinessDomain(analysis: AnalysisArtifact): string {
+  const corpus = [analysis.topic, analysis.goal, analysis.trigger, ...analysis.outcomes, ...analysis.touchpoints, ...analysis.actors]
+    .join(" ")
+    .toLowerCase();
+
+  const domainPatterns: Array<[string, RegExp]> = [
+    ["commerce", /checkout|cart|order|catalog|purchase|buyer|seller/],
+    ["identity", /login|sign in|authenticate|identity|access|role|permission|mfa/],
+    ["finance", /payment|invoice|refund|settlement|billing|charge|wallet/],
+    ["risk", /fraud|risk|alert|watchlist|score|suspicious/],
+    ["compliance", /kyc|policy|audit|compliance|regulation/],
+    ["fulfillment", /shipment|delivery|warehouse|dispatch|carrier|pack/],
+    ["support", /ticket|case|incident|support|escalation/],
+    ["marketing", /campaign|audience|lead|consent|nurture/],
+    ["analytics", /report|dashboard|metric|analytics|trend/],
+    ["platform", /api|service|queue|job|event|integration|system/],
+    ["data", /database|record|dataset|sync|storage|ledger/],
+    ["operations", /review|task|workflow|intake|process|operator|staff/],
+    ["customer", /customer|profile|account|user/],
+    ["content", /document|publish|content|article|file/],
+    ["sales", /lead|opportunity|quote|contract|proposal/],
+  ];
+
+  for (const [domain, pattern] of domainPatterns) {
+    if (pattern.test(corpus)) {
+      return domain;
+    }
+  }
+
+  return "operations";
+}
+
+function resolveBusinessObject(step: BusinessFlowStep): string {
+  const text = `${step.actor} ${step.action} ${step.touchpoint} ${step.outcome} ${step.notes}`.toLowerCase();
+  const objectPatterns: Array<[string, RegExp]> = [
+    ["approval", /approve|approval|authorize|authorized/],
+    ["payment", /payment|pay|transaction|wallet|card|charge/],
+    ["invoice", /invoice|bill|billing/],
+    ["order", /order|cart|checkout|purchase/],
+    ["shipment", /shipment|ship|delivery|carrier|dispatch/],
+    ["ticket", /ticket|case|incident|issue|support/],
+    ["document", /document|form|file|attachment/],
+    ["notification", /notify|notification|email|mail|sms|message/],
+    ["user", /user|customer|buyer|guest|staff|manager|reviewer/],
+    ["role", /role|permission|access/],
+    ["rule", /rule|policy|eligib|validate|check|decision/],
+    ["report", /report|dashboard|metric|summary/],
+    ["record", /record|database|db|ledger|store|save|archive/],
+    ["review", /review|verify|inspect|assess/],
+    ["task", /task|process|handle|perform|complete/],
+    ["request", /request|submit|application|create|open|receive/],
+  ];
+
+  for (const [object, pattern] of objectPatterns) {
+    if (pattern.test(text)) {
+      return object;
+    }
+  }
+
+  return "task";
+}
+
+function resolveLifecycleState(step: BusinessFlowStep): string {
+  const text = `${step.action} ${step.decision} ${step.outcome} ${step.notes}`.toLowerCase();
+
+  if (/reject|denied|failed|error|cancel|invalid|unavailable/.test(text)) {
+    return "rejected";
+  }
+  if (/approve|authorized|accepted/.test(text)) {
+    return "approved";
+  }
+  if (/verify|validated|confirmed|matched|checked/.test(text)) {
+    return "verified";
+  }
+  if (/complete|completed|posted|fulfilled|delivered|archived|recorded/.test(text)) {
+    return "completed";
+  }
+  if (/submit|sent|requested|created|opened|received/.test(text)) {
+    return "submitted";
+  }
+
+  return "draft";
+}
+
+function resolveSelectionClass(step: BusinessFlowStep): MermaidIconSelection["mermaidClass"] {
+  if (step.notes !== "-") {
+    return "exception";
+  }
+  if (step.decision !== "-") {
+    return "decision";
+  }
+  if (step.touchpoint && isExternalTouchpoint(step.touchpoint)) {
+    return "external";
+  }
+
+  return "process";
+}
+
+function resolveFallbackExportIcon(mermaidClass: MermaidIconSelection["mermaidClass"]): string {
+  switch (mermaidClass) {
+    case "decision":
+      return "assets/mermaid-icons/decision.svg";
+    case "exception":
+      return "assets/mermaid-icons/exception.svg";
+    case "external":
+      return "assets/mermaid-icons/external-system.svg";
+    case "startEnd":
+      return "assets/mermaid-icons/start-end.svg";
+    case "note":
+      return "assets/mermaid-icons/process.svg";
+    case "process":
+    default:
+      return "assets/mermaid-icons/process.svg";
+  }
+}
+
+function summarizeSelectionReason(step: BusinessFlowStep, domain: string, object: string, state: string): string {
+  const reasons = [
+    `domain \`${domain}\` matches the overall business context`,
+    `object \`${object}\` matches the main noun or action target in the step`,
+    `state \`${state}\` reflects the supported business status`,
+  ];
+
+  if (step.touchpoint) {
+    reasons.push(`touchpoint evidence: ${step.touchpoint}`);
+  }
+
+  return reasons.join("; ");
 }
 
 function collectCandidateLines(sources: ExtractedSource[]): CandidateLine[] {
@@ -475,6 +717,162 @@ function createEdgeTracker(): EdgeTracker {
 function buildNarrativeSentence(step: BusinessFlowStep): string {
   const actorPrefix = step.actor && !step.action.toLowerCase().startsWith(step.actor.toLowerCase()) ? `${step.actor} ` : "";
   return `${actorPrefix}${step.action}. Expected outcome: ${step.outcome}.`;
+}
+
+function buildTypedGaps(goal: string, actors: string[], steps: BusinessFlowStep[], decisions: string[]): GapItem[] {
+  const gaps: GapItem[] = [];
+
+  if (goal === "Unknown / needs confirmation") {
+    gaps.push({ category: "missing-rule", description: "The business goal is not explicit in the source corpus — add a Goal section." });
+  }
+  if (actors.length === 0) {
+    gaps.push({ category: "unresolved-actor", description: "The primary actor or owner is not explicit in the source corpus." });
+  }
+  if (steps.length === 0) {
+    gaps.push({ category: "missing-rule", description: "No ordered steps were detected — confirm the intended business-flow sequence." });
+  }
+  if (decisions.length === 0) {
+    gaps.push({ category: "undefined-branch", description: "No explicit branching rule was detected — confirm whether the flow is fully linear." });
+  }
+
+  // Check for steps with exception notes but no recovery mention
+  const exceptionStepsWithNoRecovery = steps.filter(
+    (s) => s.notes !== "-" && !/\b(retry|recovery|fallback|cancel|notify|escalate|revert)\b/i.test(s.notes)
+  );
+  if (exceptionStepsWithNoRecovery.length > 0) {
+    gaps.push({
+      category: "missing-rollback",
+      description: `${exceptionStepsWithNoRecovery.length} exception step(s) have no recovery/rollback behavior: ${exceptionStepsWithNoRecovery.map((s) => `Step ${s.index}`).join(", ")}`,
+    });
+  }
+
+  // Check for async indicators without callback
+  const hasAsyncIndicator = steps.some((s) => /\b(webhook|queue|callback|async|event|timeout)\b/i.test(`${s.action} ${s.touchpoint}`));
+  const hasCallbackMention = steps.some((s) => /\b(callback|on.*success|on.*failure|on.*complete)\b/i.test(`${s.action} ${s.notes}`));
+  if (hasAsyncIndicator && !hasCallbackMention) {
+    gaps.push({ category: "missing-async-callback", description: "Async/event pattern detected but no explicit callback or failure handler defined." });
+  }
+
+  return gaps;
+}
+
+function buildDerivedGapsFromAnalysis(input: {
+  permissions: NonNullable<AnalysisArtifact["permissions"]>;
+  asyncEvents: NonNullable<AnalysisArtifact["asyncEvents"]>;
+  stateMachine: NonNullable<AnalysisArtifact["stateMachine"]>;
+  contradictions: NonNullable<AnalysisArtifact["contradictions"]>;
+  steps: BusinessFlowStep[];
+}): GapItem[] {
+  const gaps: GapItem[] = [];
+
+  if (input.permissions.gaps.length > 0) {
+    for (const gap of input.permissions.gaps.slice(0, 4)) {
+      gaps.push({ category: "missing-permission", description: gap.description });
+    }
+  }
+
+  if (input.asyncEvents.some((event) => !event.hasCallback)) {
+    gaps.push({ category: "missing-async-callback", description: "At least one async event has no explicit callback or completion signal." });
+  }
+
+  if (input.asyncEvents.length > 0 && !input.asyncEvents.some((event) => event.retryPolicy)) {
+    gaps.push({ category: "missing-retry", description: "Async operations are present but retry/backoff policy is not explicit." });
+  }
+
+  if (input.asyncEvents.length > 0 && !input.asyncEvents.some((event) => event.retryPolicy?.timeoutSeconds !== "unknown")) {
+    gaps.push({ category: "missing-timeout", description: "Async operations are present but timeout/deadline behavior is not explicit." });
+  }
+
+  if (input.stateMachine.states.length < 2 || input.stateMachine.transitions.length === 0) {
+    gaps.push({ category: "missing-state-detail", description: "The spec does not provide enough lifecycle detail to form a trustworthy state machine." });
+  }
+
+  if (input.stateMachine.invalidTransitions.length > 0) {
+    gaps.push({ category: "missing-state-detail", description: input.stateMachine.invalidTransitions[0] });
+  }
+
+  if (input.contradictions.length > 0) {
+    gaps.push({ category: "missing-rule", description: `Contradictory statements detected: ${input.contradictions[0].description}` });
+  }
+
+  if (input.steps.some((step) => step.decision !== "-" && /needs confirmation/i.test(`${step.outcome} ${step.notes}`))) {
+    gaps.push({ category: "undefined-branch", description: "One or more decision points still rely on an unresolved 'Needs confirmation' branch." });
+  }
+
+  return gaps;
+}
+
+function dedupeGapItems(gaps: GapItem[]): GapItem[] {
+  const seen = new Set<string>();
+
+  return gaps.filter((gap) => {
+    const key = `${gap.category}:${gap.description}`;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+}
+
+function buildCrossFlowImpacts(input: {
+  domain: string;
+  asyncEvents: NonNullable<AnalysisArtifact["asyncEvents"]>;
+  externalDependencies: NonNullable<AnalysisArtifact["externalDependencies"]>;
+  permissions: NonNullable<AnalysisArtifact["permissions"]>;
+  risks: NonNullable<AnalysisArtifact["risks"]>;
+}): CrossFlowImpactItem[] {
+  const impacts: CrossFlowImpactItem[] = [];
+
+  if (input.asyncEvents.length > 0) {
+    impacts.push({
+      area: "Status propagation",
+      impact: "Async completion timing can change downstream confirmation and terminal-state timing.",
+      reason: "Webhook, callback, queue, or polling patterns were detected.",
+    });
+  }
+
+  if (input.externalDependencies.length > 0) {
+    impacts.push({
+      area: "External integration stability",
+      impact: "Changes in dependency behavior may affect customer-facing completion, retries, and exception paths.",
+      reason: "External dependencies were extracted from the source corpus.",
+    });
+  }
+
+  if (input.permissions.entries.length > 0 || input.permissions.gaps.length > 0) {
+    impacts.push({
+      area: "Role boundary consistency",
+      impact: "Role or action changes can alter approval, review, and management flow ownership across connected steps.",
+      reason: "Permission matrix entries or permission gaps were identified.",
+    });
+  }
+
+  if (input.domain === "commerce" || input.domain === "finance") {
+    impacts.push({
+      area: "Financial reconciliation",
+      impact: "Order and payment state changes can affect downstream reconciliation, settlement, and confirmation messaging.",
+      reason: "The resolved domain indicates a commerce or finance workflow.",
+    });
+  }
+
+  if (input.domain === "identity") {
+    impacts.push({
+      area: "Access continuity",
+      impact: "Authentication and role-state changes can affect session validity, approval paths, and audit expectations.",
+      reason: "The resolved domain indicates an identity workflow.",
+    });
+  }
+
+  if (input.risks.level === "high" || input.risks.level === "critical") {
+    impacts.push({
+      area: "Operational assurance",
+      impact: "High-risk hotspots should trigger regression and abuse-failure coverage before downstream process changes are released.",
+      reason: `Risk score is ${input.risks.total}/100 with level ${input.risks.level}.`,
+    });
+  }
+
+  return impacts.slice(0, 5);
 }
 
 function buildQuestions(goal: string, actors: string[], steps: BusinessFlowStep[], decisions: string[]): string[] {

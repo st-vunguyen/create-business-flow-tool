@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="marketing-record-draft-title marketing-record-draft-desc">
+  <title id="marketing-record-draft-title">marketing.record.draft</title>
+  <desc id="marketing-record-draft-desc">Marketing Record in Draft state. Suggested Mermaid class: external. Fallback export icon: assets/mermaid-icons/data-store.svg.</desc>
+  <defs>
+    <linearGradient id="marketing-record-draft-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FCE7F3" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#fdf1f8"/>
+    </linearGradient>
+    <linearGradient id="marketing-record-draft-accent" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#BE185D"/>
+      <stop offset="1" stop-color="#DB2777"/>
+    </linearGradient>
+    <filter id="marketing-record-draft-shadow" x="2" y="2" width="60" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  <g filter="url(#marketing-record-draft-shadow)">
+    <!-- Base App-Style Squircle -->
+    <rect x="6" y="6" width="52" height="52" rx="16" fill="url(#marketing-record-draft-bg)" stroke="#DB2777" stroke-width="1.5" stroke-opacity="0.3"/>
+    
+    <!-- Central Glyph (Scaled UP!) -->
+    <g transform="translate(-14.4, -14.4) scale(1.45)">
+      <ellipse cx="32" cy="22" rx="11" ry="4.5" stroke="#BE185D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M21 22V38C21 40.5 25.9 43 32 43C38.1 43 43 40.5 43 38V22" stroke="#BE185D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M21 30C21 32.5 25.9 35 32 35C38.1 35 43 32.5 43 30" stroke="#BE185D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+
+    <!-- State Badge (Bottom Right to not overlap glyph center) -->
+    <g transform="translate(50, 50)">
+      <circle cx="0" cy="0" r="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <path d="M-3.5 0.5L1.5 -4.5L3.5 -2.5L-1.5 2.5L-4.5 3.5L-3.5 0.5Z" stroke="#94A3B8" stroke-width="1.8" fill="none" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

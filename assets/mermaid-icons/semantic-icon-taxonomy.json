@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "systemName": "business-flow-semantic-icon-registry",
+  "description": "Semantic icon taxonomy for evidence-backed business-flow diagrams. Uses a deterministic naming convention to create 1,440 modern icon tokens while keeping Mermaid text-first.",
+  "namingConvention": "<domain>.<object>.<state>",
+  "tokenCount": 1440,
+  "formula": {
+    "domains": 15,
+    "objects": 16,
+    "states": 6,
+    "expression": "15 x 16 x 6"
+  },
+  "coreExportIcons": {
+    "startEnd": "assets/mermaid-icons/start-end.svg",
+    "process": "assets/mermaid-icons/process.svg",
+    "decision": "assets/mermaid-icons/decision.svg",
+    "exception": "assets/mermaid-icons/exception.svg",
+    "external": "assets/mermaid-icons/external-system.svg",
+    "dataStore": "assets/mermaid-icons/data-store.svg"
+  },
+  "domains": [
+    { "key": "commerce", "label": "Commerce", "recommendedGlyph": "shopping-cart" },
+    { "key": "customer", "label": "Customer", "recommendedGlyph": "users-round" },
+    { "key": "identity", "label": "Identity", "recommendedGlyph": "shield-user" },
+    { "key": "sales", "label": "Sales", "recommendedGlyph": "badge-dollar-sign" },
+    { "key": "finance", "label": "Finance", "recommendedGlyph": "wallet" },
+    { "key": "risk", "label": "Risk", "recommendedGlyph": "shield-alert" },
+    { "key": "compliance", "label": "Compliance", "recommendedGlyph": "shield-check" },
+    { "key": "operations", "label": "Operations", "recommendedGlyph": "workflow" },
+    { "key": "fulfillment", "label": "Fulfillment", "recommendedGlyph": "package" },
+    { "key": "support", "label": "Support", "recommendedGlyph": "life-buoy" },
+    { "key": "marketing", "label": "Marketing", "recommendedGlyph": "megaphone" },
+    { "key": "content", "label": "Content", "recommendedGlyph": "file-stack" },
+    { "key": "analytics", "label": "Analytics", "recommendedGlyph": "chart-column" },
+    { "key": "platform", "label": "Platform", "recommendedGlyph": "server-cog" },
+    { "key": "data", "label": "Data", "recommendedGlyph": "database" }
+  ],
+  "objects": [
+    { "key": "request", "label": "Request", "recommendedGlyphs": ["send", "inbox"], "mermaidClass": "process", "fallbackExportIcon": "assets/mermaid-icons/process.svg" },
+    { "key": "task", "label": "Task", "recommendedGlyphs": ["list-checks", "clipboard-list"], "mermaidClass": "process", "fallbackExportIcon": "assets/mermaid-icons/process.svg" },
+    { "key": "review", "label": "Review", "recommendedGlyphs": ["search-check", "scan-search"], "mermaidClass": "process", "fallbackExportIcon": "assets/mermaid-icons/process.svg" },
+    { "key": "approval", "label": "Approval", "recommendedGlyphs": ["badge-check", "stamp"], "mermaidClass": "decision", "fallbackExportIcon": "assets/mermaid-icons/decision.svg" },
+    { "key": "order", "label": "Order", "recommendedGlyphs": ["shopping-bag", "receipt-text"], "mermaidClass": "process", "fallbackExportIcon": "assets/mermaid-icons/process.svg" },
+    { "key": "payment", "label": "Payment", "recommendedGlyphs": ["wallet", "credit-card"], "mermaidClass": "process", "fallbackExportIcon": "assets/mermaid-icons/process.svg" },
+    { "key": "invoice", "label": "Invoice", "recommendedGlyphs": ["file-text", "receipt"], "mermaidClass": "process", "fallbackExportIcon": "assets/mermaid-icons/process.svg" },
+    { "key": "shipment", "label": "Shipment", "recommendedGlyphs": ["package", "truck"], "mermaidClass": "external", "fallbackExportIcon": "assets/mermaid-icons/external-system.svg" },
+    { "key": "ticket", "label": "Ticket", "recommendedGlyphs": ["ticket", "circle-help"], "mermaidClass": "process", "fallbackExportIcon": "assets/mermaid-icons/process.svg" },
+    { "key": "document", "label": "Document", "recommendedGlyphs": ["file-stack", "folder-open"], "mermaidClass": "external", "fallbackExportIcon": "assets/mermaid-icons/data-store.svg" },
+    { "key": "notification", "label": "Notification", "recommendedGlyphs": ["bell", "mail"], "mermaidClass": "external", "fallbackExportIcon": "assets/mermaid-icons/external-system.svg" },
+    { "key": "user", "label": "User", "recommendedGlyphs": ["user-round", "contact-round"], "mermaidClass": "process", "fallbackExportIcon": "assets/mermaid-icons/process.svg" },
+    { "key": "role", "label": "Role", "recommendedGlyphs": ["shield-user", "key-round"], "mermaidClass": "decision", "fallbackExportIcon": "assets/mermaid-icons/decision.svg" },
+    { "key": "rule", "label": "Rule", "recommendedGlyphs": ["scale", "shield-check"], "mermaidClass": "decision", "fallbackExportIcon": "assets/mermaid-icons/decision.svg" },
+    { "key": "report", "label": "Report", "recommendedGlyphs": ["chart-column", "file-bar-chart"], "mermaidClass": "external", "fallbackExportIcon": "assets/mermaid-icons/data-store.svg" },
+    { "key": "record", "label": "Record", "recommendedGlyphs": ["database", "folder-archive"], "mermaidClass": "external", "fallbackExportIcon": "assets/mermaid-icons/data-store.svg" }
+  ],
+  "states": [
+    { "key": "draft", "label": "Draft", "intent": "Created but not yet handed off" },
+    { "key": "submitted", "label": "Submitted", "intent": "Sent, requested, or handed off" },
+    { "key": "verified", "label": "Verified", "intent": "Checked and supported by evidence or controls" },
+    { "key": "approved", "label": "Approved", "intent": "Accepted or authorized" },
+    { "key": "rejected", "label": "Rejected", "intent": "Declined, failed, or denied" },
+    { "key": "completed", "label": "Completed", "intent": "Finished, archived, delivered, or posted" }
+  ],
+  "selectionRules": [
+    "Choose the domain from the business context, not the prettiest icon.",
+    "Choose the object from the main noun or artifact under change.",
+    "Choose the state from the source-backed business status.",
+    "Use Mermaid class and fallback export icon based on the object mapping.",
+    "Do not let icon choices imply unsupported automation, ownership, or decisions."
+  ]
+}

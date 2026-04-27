@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fulfillment-approval-draft-title fulfillment-approval-draft-desc">
+  <title id="fulfillment-approval-draft-title">fulfillment.approval.draft</title>
+  <desc id="fulfillment-approval-draft-desc">Fulfillment Approval in Draft state. Suggested Mermaid class: decision. Fallback export icon: assets/mermaid-icons/decision.svg.</desc>
+  <defs>
+    <linearGradient id="fulfillment-approval-draft-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EDE9FE" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#f4f2fe"/>
+    </linearGradient>
+    <linearGradient id="fulfillment-approval-draft-accent" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <filter id="fulfillment-approval-draft-shadow" x="2" y="2" width="60" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  <g filter="url(#fulfillment-approval-draft-shadow)">
+    <!-- Base App-Style Squircle -->
+    <rect x="6" y="6" width="52" height="52" rx="16" fill="url(#fulfillment-approval-draft-bg)" stroke="#8B5CF6" stroke-width="1.5" stroke-opacity="0.3"/>
+    
+    <!-- Central Glyph (Scaled UP!) -->
+    <g transform="translate(-14.4, -14.4) scale(1.45)">
+      <path d="M32 18L42 22V30C42 36 38 40.5 32 44C26 40.5 22 36 22 30V22L32 18Z" stroke="#7C3AED" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M27.5 30L31 33.5L37.5 27" stroke="#7C3AED" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+
+    <!-- State Badge (Bottom Right to not overlap glyph center) -->
+    <g transform="translate(50, 50)">
+      <circle cx="0" cy="0" r="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+      <path d="M-3.5 0.5L1.5 -4.5L3.5 -2.5L-1.5 2.5L-4.5 3.5L-3.5 0.5Z" stroke="#94A3B8" stroke-width="1.8" fill="none" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

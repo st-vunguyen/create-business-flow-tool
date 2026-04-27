@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="identity-payment-rejected-title identity-payment-rejected-desc">
+  <title id="identity-payment-rejected-title">identity.payment.rejected</title>
+  <desc id="identity-payment-rejected-desc">Identity Payment in Rejected state. Suggested Mermaid class: process. Fallback export icon: assets/mermaid-icons/process.svg.</desc>
+  <defs>
+    <linearGradient id="identity-payment-rejected-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E0E7FF" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#ecf1ff"/>
+    </linearGradient>
+    <linearGradient id="identity-payment-rejected-accent" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#4338CA"/>
+    </linearGradient>
+    <filter id="identity-payment-rejected-shadow" x="2" y="2" width="60" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  <g filter="url(#identity-payment-rejected-shadow)">
+    <!-- Base App-Style Squircle -->
+    <rect x="6" y="6" width="52" height="52" rx="16" fill="url(#identity-payment-rejected-bg)" stroke="#4338CA" stroke-width="1.5" stroke-opacity="0.3"/>
+    
+    <!-- Central Glyph (Scaled UP!) -->
+    <g transform="translate(-14.4, -14.4) scale(1.45)">
+      <rect x="18" y="22" width="28" height="20" rx="4" stroke="#4F46E5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M18 28H46" stroke="#4F46E5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M24 36H31" stroke="#4F46E5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+
+    <!-- State Badge (Bottom Right to not overlap glyph center) -->
+    <g transform="translate(50, 50)">
+      <circle cx="0" cy="0" r="10" fill="#FFFFFF" stroke="#FECACA" stroke-width="1.5"/>
+      <path d="M-3 -3L3 3M3 -3L-3 3" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="analytics-invoice-verified-title analytics-invoice-verified-desc">
+  <title id="analytics-invoice-verified-title">analytics.invoice.verified</title>
+  <desc id="analytics-invoice-verified-desc">Analytics Invoice in Verified state. Suggested Mermaid class: process. Fallback export icon: assets/mermaid-icons/process.svg.</desc>
+  <defs>
+    <linearGradient id="analytics-invoice-verified-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFEDD5" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#fff4e6"/>
+    </linearGradient>
+    <linearGradient id="analytics-invoice-verified-accent" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7C2D12"/>
+      <stop offset="1" stop-color="#EA580C"/>
+    </linearGradient>
+    <filter id="analytics-invoice-verified-shadow" x="2" y="2" width="60" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  <g filter="url(#analytics-invoice-verified-shadow)">
+    <!-- Base App-Style Squircle -->
+    <rect x="6" y="6" width="52" height="52" rx="16" fill="url(#analytics-invoice-verified-bg)" stroke="#EA580C" stroke-width="1.5" stroke-opacity="0.3"/>
+    
+    <!-- Central Glyph (Scaled UP!) -->
+    <g transform="translate(-14.4, -14.4) scale(1.45)">
+      <path d="M24 18H38L44 24V44H24Z" stroke="#7C2D12" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M38 18V24H44" stroke="#7C2D12" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M28 30H40" stroke="#7C2D12" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M28 36H40" stroke="#7C2D12" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+
+    <!-- State Badge (Bottom Right to not overlap glyph center) -->
+    <g transform="translate(50, 50)">
+      <circle cx="0" cy="0" r="10" fill="#FFFFFF" stroke="#99F6E4" stroke-width="1.5"/>
+      <path d="M-3.5 -0.5L-0.5 2.5L4 -2.5" stroke="#0F766E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

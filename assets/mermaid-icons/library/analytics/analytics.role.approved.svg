@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="analytics-role-approved-title analytics-role-approved-desc">
+  <title id="analytics-role-approved-title">analytics.role.approved</title>
+  <desc id="analytics-role-approved-desc">Analytics Role in Approved state. Suggested Mermaid class: decision. Fallback export icon: assets/mermaid-icons/decision.svg.</desc>
+  <defs>
+    <linearGradient id="analytics-role-approved-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFEDD5" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#fff4e6"/>
+    </linearGradient>
+    <linearGradient id="analytics-role-approved-accent" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7C2D12"/>
+      <stop offset="1" stop-color="#EA580C"/>
+    </linearGradient>
+    <filter id="analytics-role-approved-shadow" x="2" y="2" width="60" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  <g filter="url(#analytics-role-approved-shadow)">
+    <!-- Base App-Style Squircle -->
+    <rect x="6" y="6" width="52" height="52" rx="16" fill="url(#analytics-role-approved-bg)" stroke="#EA580C" stroke-width="1.5" stroke-opacity="0.3"/>
+    
+    <!-- Central Glyph (Scaled UP!) -->
+    <g transform="translate(-14.4, -14.4) scale(1.45)">
+      <path d="M32 18L41 22V29C41 35 37 39.5 32 43C27 39.5 23 35 23 29V22L32 18Z" stroke="#7C2D12" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="32" cy="28" r="3.5" stroke="#7C2D12" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M28 35C29.2 33.8 30.5 33.2 32 33.2C33.5 33.2 34.8 33.8 36 35" stroke="#7C2D12" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+
+    <!-- State Badge (Bottom Right to not overlap glyph center) -->
+    <g transform="translate(50, 50)">
+      <circle cx="0" cy="0" r="10" fill="#FFFFFF" stroke="#BBF7D0" stroke-width="1.5"/>
+      <path d="M-3.5 -0.5L-0.5 2.5L4 -2.5" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>

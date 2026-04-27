@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="risk-approval-approved-title risk-approval-approved-desc">
+  <title id="risk-approval-approved-title">risk.approval.approved</title>
+  <desc id="risk-approval-approved-desc">Risk Approval in Approved state. Suggested Mermaid class: decision. Fallback export icon: assets/mermaid-icons/decision.svg.</desc>
+  <defs>
+    <linearGradient id="risk-approval-approved-bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FEE2E2" stop-opacity="0.5" />
+      <stop offset="1" stop-color="#feeeee"/>
+    </linearGradient>
+    <linearGradient id="risk-approval-approved-accent" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B91C1C"/>
+      <stop offset="1" stop-color="#DC2626"/>
+    </linearGradient>
+    <filter id="risk-approval-approved-shadow" x="2" y="2" width="60" height="60" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+  <g filter="url(#risk-approval-approved-shadow)">
+    <!-- Base App-Style Squircle -->
+    <rect x="6" y="6" width="52" height="52" rx="16" fill="url(#risk-approval-approved-bg)" stroke="#DC2626" stroke-width="1.5" stroke-opacity="0.3"/>
+    
+    <!-- Central Glyph (Scaled UP!) -->
+    <g transform="translate(-14.4, -14.4) scale(1.45)">
+      <path d="M32 18L42 22V30C42 36 38 40.5 32 44C26 40.5 22 36 22 30V22L32 18Z" stroke="#B91C1C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M27.5 30L31 33.5L37.5 27" stroke="#B91C1C" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </g>
+
+    <!-- State Badge (Bottom Right to not overlap glyph center) -->
+    <g transform="translate(50, 50)">
+      <circle cx="0" cy="0" r="10" fill="#FFFFFF" stroke="#BBF7D0" stroke-width="1.5"/>
+      <path d="M-3.5 -0.5L-0.5 2.5L4 -2.5" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+</svg>
