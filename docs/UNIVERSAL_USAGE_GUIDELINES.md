@@ -41,7 +41,22 @@ Think of the pipeline as four layers:
 Install dependencies once from repo root:
 
 ```bash
-pnpm install
+corepack enable
+pnpm install --frozen-lockfile
+pnpm run doctor
+```
+
+Why this is enough:
+
+- `node_modules/` is restored from `package.json` + `pnpm-lock.yaml`
+- `dist/` is rebuilt automatically by the repository `prepare` script during install
+
+So neither `node_modules/` nor `dist/` needs to be committed to git for normal clone-and-use workflow.
+
+If you want to run the compiled artifact instead of `tsx`, use:
+
+```bash
+pnpm run tool:dist -- doctor
 ```
 
 No environment variables are required for the normal workflow.

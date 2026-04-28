@@ -3,15 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.32.1",
   "description": "CLI tool to normalize multi-format specs, generate business-flow documents, and convert them to Mermaid diagrams.",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=10"
+  },
   "bin": {
     "business-flow-tool": "dist/cli.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "doctor": "tsx src/cli.ts doctor",
     "generate:icons": "node tools/generate-semantic-icon-library.mjs",
     "lint": "tsc --noEmit -p tsconfig.json",
+    "prepare": "pnpm run build",
     "tool": "tsx src/cli.ts",
+    "tool:dist": "node dist/cli.js",
     "test": "node --test --import tsx tests/**/*.test.ts"
   },
   "dependencies": {

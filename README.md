@@ -100,9 +100,20 @@ specs/ -> business-flow/<slug>/01-source -> business-flow/<slug>/02-analysis -> 
 
 ## Installation
 
+`node_modules/` and `dist/` are intentionally not committed.
+
+- `node_modules/` is recreated from `package.json` and `pnpm-lock.yaml`
+- `dist/` is generated automatically by the `prepare` script during `pnpm install`
+
+From a fresh clone:
+
 ```bash
-pnpm install
+corepack enable
+pnpm install --frozen-lockfile
+pnpm run doctor
 ```
+
+If `corepack` is already enabled on your machine, `pnpm install --frozen-lockfile` is enough.
 
 ## Quick start
 
@@ -120,10 +131,16 @@ If you want to run the local pipeline yourself, this is the main command:
 pnpm run tool -- run --spec-dir specs/<project> --slug <slug> --mode heuristic
 ```
 
+If you prefer the built artifact after install, use the compiled CLI because `pnpm install` generates `dist/` automatically:
+
+```bash
+pnpm run tool:dist -- run --spec-dir specs/<project> --slug <slug> --mode heuristic
+```
+
 For a quick runtime summary:
 
 ```bash
-pnpm run tool -- doctor
+pnpm run doctor
 ```
 
 ## Advanced CLI usage
