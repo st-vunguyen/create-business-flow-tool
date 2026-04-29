@@ -1,6 +1,6 @@
 ---
 agent: agent
-description: "Autonomously bootstrap the repo if needed, read the analysis artifact, and produce a fully traceable Mermaid pack without any manual user coordination."
+description: "Autonomously bootstrap the repo if needed, read the analysis artifact, and produce a polished, fully traceable Mermaid pack without manual user coordination."
 tools: ['edit', 'search', 'todos']
 ---
 
@@ -14,7 +14,7 @@ Your task is to take the analysis artifact under `business-flow/<slug>/02-analys
 
 - `business-flow/<slug>/03-mermaid/business-flow-mermaid.md`
 
-The user should not need to manually open intermediate files, choose icons, or fix Mermaid structure.
+The output must feel modern, deliberate, colorful, and review-friendly while staying evidence-backed.
 
 ---
 
@@ -33,6 +33,7 @@ Do not ask the user to:
 - manually select icon tokens
 - manually split flowchart vs swimlane vs state diagram
 - manually align traceability rows
+- manually restyle diagrams after generation
 
 ---
 
@@ -73,7 +74,7 @@ Write or refine:
 
 ### Step 3 — Self-verify before handoff
 
-Check diagram correctness, traceability, and icon-token quality before returning.
+Check diagram correctness, visual quality, traceability, and icon-token quality before returning.
 
 ### Step 4 — Return a short final summary
 
@@ -95,13 +96,29 @@ Return only:
 5. **State diagram optional** — include when supported by the analysis state machine.
 6. **Follow the exact init block and class system** from `src/core/mermaid-style.ts`.
 7. **Use semantic icon tokens from the repository icon library** only when they reinforce supported meaning.
-8. **Prefer a correct, simple diagram** over an over-designed but weakly evidenced one.
+8. **Prefer a polished and readable diagram** over a crowded or weakly evidenced one.
+9. **Use repo icons, not emoji.** Emoji must not be used as a stand-in for state, actor, or severity.
 
 ---
 
 ## Visual standard
 
-### Init block — copy exactly
+Model the output after polished architecture and workflow boards:
+
+- clear grouping blocks with rounded corners
+- actor swimlanes with alternating soft background colors
+- high contrast node borders and readable text
+- short labels with strong hierarchy
+- obvious happy path vs decision vs exception edges
+- icon metadata chosen from the repository library first
+
+The result should feel modern and presentation-ready, not default Mermaid styling.
+
+---
+
+### Init block — copy exactly from `src/core/mermaid-style.ts`
+
+Do not approximate or simplify it.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"primaryColor":"#EFF6FF","primaryTextColor":"#1E3A5F","primaryBorderColor":"#2563EB","lineColor":"#2563EB","secondaryColor":"#FEF9C3","tertiaryColor":"#F0FDF4","edgeLabelBackground":"#FFFFFF","fontSize":"14px"}}}%%
@@ -123,6 +140,14 @@ classDef note fill:#F8FAFC,stroke:#94A3B8,color:#475569,rx:6
 - happy path: `stroke:#2563EB,stroke-width:2.5px`
 - neutral path: `stroke:#64748B,stroke-width:1.75px`
 - exception path: `stroke:#DC2626,stroke-width:2px,stroke-dasharray: 4 2`
+
+### Labeling rules
+
+- keep each node label concise and business-readable
+- prefer `Actor: action` for the main flowchart
+- add touchpoint context only when it clarifies ownership or system interaction
+- do not dump whole sentences from the source into nodes
+- do not use decorative punctuation or emoji
 
 ---
 
@@ -157,6 +182,14 @@ External systems, APIs, queues, or third-party touchpoints should use the `exter
 ### 2) Swimlane diagram — `flowchart LR`
 
 Create one subgraph per actor when actor ownership is explicit.
+
+Requirements:
+
+- each actor subgraph must be visually distinct
+- use rounded actor containers
+- keep actor labels short and readable
+- preserve left-to-right business flow across lanes
+- if a step is clearly system-owned, keep it in the corresponding actor or system lane
 
 If ownership is not explicit, omit swimlanes and use the fallback note:
 
@@ -200,6 +233,7 @@ Use icon tokens as export metadata and diagram-family labeling support, not as a
 ### Selection rules
 
 - choose `3–8` semantic tokens for major node families only
+- prefer tokens that match the dominant business nouns and states
 - do not pick tokens that imply unsupported approval, automation, ownership, or completion states
 - if no precise semantic token fits, fall back to local core icons:
   - `assets/mermaid-icons/start-end.svg`
@@ -208,6 +242,10 @@ Use icon tokens as export metadata and diagram-family labeling support, not as a
   - `assets/mermaid-icons/exception.svg`
   - `assets/mermaid-icons/external-system.svg`
   - `assets/mermaid-icons/data-store.svg`
+
+### Icon emphasis rule
+
+When there is a choice between emoji and repository icons, always choose repository icons.
 
 ---
 
@@ -272,138 +310,3 @@ If the analysis is weak, repair it through the repository workflow.
 If the Mermaid output is incomplete, finish it.
 
 Do the work yourself so the user only needs to review the final business-flow outputs.
-  class NOTE note
-```
-
-### 3. State diagram — `stateDiagram-v2` *(when Section 10 of analysis has states)*
-
-Copy the state diagram from Section 10 of the analysis document directly, or re-render it here.
-
----
-
-## Semantic icon token selection
-
-The repository has **1,440 semantic icon tokens** in the library. Use them to annotate node families in your output, not as embedded SVG in Mermaid text (Mermaid renders text only — icons are for export metadata).
-
-### How to select tokens
-
-1. **Identify the business domain** from `## 0) Scope > Domain` in the analysis document.
-2. **Identify the business object** for each major node family (approval, payment, order, shipment, user, rule, record, report…).
-3. **Identify the lifecycle state** for that node family (created, submitted, approved, rejected, verified, completed, cancelled…).
-4. **Compose the token**: `<domain>.<object>.<state>` — e.g., `finance.payment.submitted`, `identity.user.verified`.
-5. **Resolve the physical SVG path**: `assets/mermaid-icons/library/<domain>/<token>.svg`
-6. **Verify against the manifest**: `assets/mermaid-icons/library/icon-manifest.json`
-
-### Token resolution references
-
-| Resource | Purpose |
-|---|---|
-| `docs/mermaid-icon-library.md` | Human-readable icon domain overview |
-| `docs/mermaid-icon-guidelines.md` | Rules for choosing tokens without overstating meaning |
-| `docs/mermaid-icon-catalog.md` | Full generated catalog with `domain.object.state` listing |
-| `assets/mermaid-icons/semantic-icon-taxonomy.json` | Machine-readable taxonomy — check valid `domain`, `object`, `state` values |
-| `assets/mermaid-icons/library/icon-manifest.json` | Exact physical path for each token |
-
-### Icon selection rules
-
-- Choose **3–8 tokens** for the major node families only (not every node).
-- Token must **reinforce supported business meaning only** — do not pick a token that implies an action, permission, or status not evidenced in the source.
-- If no token fits precisely, use the nearest fallback from `assets/mermaid-icons/`:
-  - `process.svg` → default process node
-  - `decision.svg` → decision gateway
-  - `exception.svg` → exception / error paths
-  - `external-system.svg` → third-party or external system node
-  - `start-end.svg` → start/end terminal
-
-### Icon section format
-
-```
-## 3) Icon Set
-
-### Fallback export icons (always include)
-- `startEnd`  → `assets/mermaid-icons/start-end.svg`
-- `process`   → `assets/mermaid-icons/process.svg`
-- `decision`  → `assets/mermaid-icons/decision.svg`
-- `exception` → `assets/mermaid-icons/exception.svg`
-- `external`  → `assets/mermaid-icons/external-system.svg`
-- `data-store` → `assets/mermaid-icons/data-store.svg`
-
-### Selected semantic tokens
-- `finance.payment.submitted` → class `process` → `assets/mermaid-icons/process.svg` → `assets/mermaid-icons/library/finance/finance.payment.submitted.svg`
-  Reason: domain `finance` matches payment context; object `payment` matches main noun; state `submitted` matches trigger action.
-- `finance.payment.approved` → class `process` → `assets/mermaid-icons/process.svg` → `assets/mermaid-icons/library/finance/finance.payment.approved.svg`
-  Reason: state `approved` reflects the success outcome of the payment step.
-```
-
----
-
-## Required output structure
-
-```
-MODE=technical
-
-# <Title> Business Flow Mermaid Pack
-
-## 1) Source
-- Business flow document: business-flow/<slug>/02-analysis/business-flow-document.md
-- Output mode: flowchart+swimlane | flowchart-only
-
-## 2) Diagram Standard
-(list the init block color variables, class system, and link styles used)
-
-## 3) Icon Set
-(fallback icons + selected semantic tokens with token, class, fallback path, physical path, reason)
-
-## 4) Extracted Facts
-- Trigger: ...
-- Outcome: ...
-- Actors/Roles: ...
-- Decisions: ...
-- Exceptions: ...
-
-## 5) Mermaid Diagram
-```mermaid
-%%{init: ...}%%
-flowchart TD
-  ...
-```
-
-## 5b) State Diagram (when Section 10 is populated)
-```mermaid
-stateDiagram-v2
-  ...
-```
-
-## 6) Mermaid Diagram (Swimlane)
-```mermaid
-%%{init: ...}%%
-flowchart LR
-  ...
-```
-
-## 7) Traceability
-| NodeId | Node text | Evidence (source excerpt / line range) |
-
-## 8) Gaps / Assumptions
-
-## 9) Checklist
-- [x] English only
-- [x] No unsupported nodes, actors, or branches
-- [x] Mermaid styling follows src/core/mermaid-style.ts
-- [x] Every node has traceability
-- [x] Semantic tokens fit evidence-backed meaning
-- [x] Output is inside business-flow/<slug>/03-mermaid/
-```
-
----
-
-## Final self-check
-
-- [ ] Init block is present and uses the exact theme variables from `src/core/mermaid-style.ts`
-- [ ] All classDef names match: `startEnd`, `process`, `decision`, `exception`, `external`, `note`
-- [ ] Happy path links are blue (`stroke:#2563EB`)
-- [ ] Exception links are red dashed (`stroke:#DC2626,stroke-dasharray: 4 2`)
-- [ ] At least 3 and at most 8 semantic icon tokens chosen with `domain.object.state` pattern
-- [ ] Every token references a plausible path under `assets/mermaid-icons/library/`
-- [ ] Every node and decision row has traceability to analysis document step
-- [ ] No invented facts, branches, or actors

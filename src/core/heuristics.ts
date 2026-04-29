@@ -1,6 +1,7 @@
 import type { AnalysisArtifact, BusinessFlowStep, CrossFlowImpactItem, ExtractedSource, GapItem, MermaidArtifact, MermaidIconSelection, MermaidNodeTrace } from "../types.js";
 import { compactLines, dedupe, titleCase } from "./utils.js";
 import {
+  buildSwimlaneStyleLine,
   MERMAID_CLASS_DEFINITIONS,
   MERMAID_INIT_BLOCK,
   escapeMermaidLabel,
@@ -52,7 +53,12 @@ export function buildHeuristicAnalysis(slug: string, sources: ExtractedSource[])
   const structured = extractStructuredFlowData(sources);
   const stepMetadataMap = buildStepMetadataMap(sources);
   const topic = titleCase(slug);
-  const goal = structured.goal?.text ?? findFirstMatching(candidateLines, GOAL_PATTERN) ?? candidateLines[0]?.text ?? "Unknown / needs confirmation";
+  const goal = cleanGoalText(
+    structured.goal?.text
+      ?? findFirstMatching(candidateLines.filter((line) => !isMarkdownTableNoise(line.text)), GOAL_PATTERN)
+      ?? candidateLines.find((line) => !isMarkdownTableNoise(line.text))?.text
+      ?? "Unknown / needs confirmation",
+  );
   const explicitActors = dedupe(structured.actors.map((line) => titleCase(stripListMarker(line.text)))).filter(Boolean);
   const inferredActors = dedupe(candidateLines.map((line) => extractActor(line.text)).filter(Boolean) as string[]);
   const actors = explicitActors.length > 0 ? explicitActors.slice(0, 6) : inferredActors.slice(0, 6);
@@ -394,6 +400,11 @@ function extractStructuredFlowData(sources: ExtractedSource[]): StructuredFlowDa
         continue;
       }
 
+      // Skip markdown table rows and dividers — they are layout, not flow content.
+      if (isMarkdownTableNoise(trimmed)) {
+        continue;
+      }
+
       const candidate: CandidateLine = {
         text: stripListMarker(trimmed),
         evidence: `${line.relativePath} L${line.lineNumber}: ${trimmed}`,
@@ -552,7 +563,7 @@ function buildFlowchartDiagram(analysis: AnalysisArtifact): string {
 
   for (const step of analysis.steps) {
     const stepNodeId = `N${step.index}`;
-    const stepLabel = step.actor ? `${step.actor}: ${step.action}` : step.action;
+    const stepLabel = buildStepDisplayLabel(step);
     lines.push(`  ${stepNodeId}["${escapeMermaidLabel(stepLabel)}"]`);
     nodeClasses.set(stepNodeId, resolveStepClass(step));
     addEdge(lines, tracker, previousNode, stepNodeId, connectWithConfirmationLabel ? "Confirmed" : undefined, "happyPath");
@@ -599,14 +610,14 @@ function buildSwimlaneDiagram(analysis: AnalysisArtifact): string | undefined {
   ]);
   let decisionIndex = 1;
 
-  for (const actor of usableActors) {
+  usableActors.forEach((actor, actorIndex) => {
     const actorId = toMermaidId(actor);
     lines.push(`  subgraph ${actorId}["${escapeMermaidLabel(actor)}"]`);
     lines.push("    direction TB");
 
     for (const step of analysis.steps.filter((candidate) => candidate.actor.toLowerCase() === actor.toLowerCase())) {
       const stepNodeId = `N${step.index}`;
-      lines.push(`    ${stepNodeId}["${escapeMermaidLabel(step.action)}"]`);
+      lines.push(`    ${stepNodeId}["${escapeMermaidLabel(buildStepDisplayLabel(step, false))}"]`);
       nodeClasses.set(stepNodeId, resolveStepClass(step));
 
       if (step.decision !== "-") {
@@ -621,7 +632,8 @@ function buildSwimlaneDiagram(analysis: AnalysisArtifact): string | undefined {
     }
 
     lines.push("  end");
-  }
+    lines.push(buildSwimlaneStyleLine(actorId, actorIndex));
+  });
 
   let previousNode = "START";
   let connectWithConfirmationLabel = false;
@@ -653,6 +665,12 @@ function buildSwimlaneDiagram(analysis: AnalysisArtifact): string | undefined {
   lines.push(...buildLinkStyleLines(tracker));
 
   return lines.join("\n");
+}
+
+function buildStepDisplayLabel(step: BusinessFlowStep, includeActor = true): string {
+  const base = includeActor && step.actor ? `${step.actor}: ${step.action}` : step.action;
+  const touchpoint = step.touchpoint && step.touchpoint !== "-" ? `\n${step.touchpoint}` : "";
+  return `${base}${touchpoint}`;
 }
 
 function buildClassAssignments(nodeClasses: Map<string, string>): string[] {
@@ -1128,4 +1146,27 @@ function summarizeSentence(value: string): string {
 function toMermaidId(value: string): string {
   const normalized = value.replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_+|_+$/g, "");
   return normalized.length > 0 ? normalized : "Actor";
+}
+
+function isMarkdownTableNoise(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return true;
+  }
+  // Markdown table row or divider: starts with `|` or is a `|---|---|` divider
+  if (/^\|/.test(trimmed)) {
+    return true;
+  }
+  if (/^[-:|\s]+$/.test(trimmed) && trimmed.includes("-")) {
+    return true;
+  }
+  return false;
+}
+
+function cleanGoalText(value: string): string {
+  return value
+    .replace(/^#{1,6}\s+/, "")
+    .replace(/^[`*_]+|[`*_]+$/g, "")
+    .replace(/\s+/g, " ")
+    .trim() || "Unknown / needs confirmation";
 }

@@ -213,7 +213,7 @@ function renderStateMachineSection(analysis: AnalysisArtifact): string[] {
   if (sm.invalidTransitions.length > 0) {
     lines.push("", "### Invalid / Suspicious Transitions");
     for (const inv of sm.invalidTransitions) {
-      lines.push(`- ⚠️ ${inv}`);
+      lines.push(`- Warning: ${inv}`);
     }
   }
 
@@ -238,14 +238,14 @@ function renderPermissionsSection(analysis: AnalysisArtifact): string[] {
   if (matrix.conflicts.length > 0) {
     lines.push("", "### Permission Conflicts");
     for (const conflict of matrix.conflicts) {
-      lines.push(`- ❌ **${conflict.action}**: ${conflict.description}`);
+      lines.push(`- Conflict — **${conflict.action}**: ${conflict.description}`);
     }
   }
 
   if (matrix.gaps.length > 0) {
     lines.push("", "### Permission Gaps");
     for (const gap of matrix.gaps.slice(0, 8)) {
-      lines.push(`- ⚠️ **${gap.action}**: ${gap.description}`);
+      lines.push(`- Gap — **${gap.action}**: ${gap.description}`);
     }
   }
 
@@ -268,14 +268,14 @@ function renderAsyncEventsSection(analysis: AnalysisArtifact): string[] {
       const retry = event.retryPolicy
         ? `max=${event.retryPolicy.maxAttempts}, backoff=${event.retryPolicy.backoffStrategy}, timeout=${event.retryPolicy.timeoutSeconds}s`
         : "-";
-      lines.push(`| ${event.kind} | ${truncate(event.name, 50)} | ${event.hasCallback ? "✓" : "❌ missing"} | ${event.hasRecovery ? "✓" : "⚠️ missing"} | ${retry} |`);
+      lines.push(`| ${event.kind} | ${truncate(event.name, 50)} | ${event.hasCallback ? "Present" : "Missing"} | ${event.hasRecovery ? "Present" : "Missing"} | ${retry} |`);
     }
   }
 
   if (deps.length > 0) {
     lines.push("", "### External Dependencies", "| Name | Kind | Failure Handling |", "|---|---|---|");
     for (const dep of deps) {
-      lines.push(`| ${dep.name} | ${dep.kind} | ${dep.hasFailureHandling ? "✓" : "⚠️ missing"} |`);
+      lines.push(`| ${dep.name} | ${dep.kind} | ${dep.hasFailureHandling ? "Present" : "Missing"} |`);
     }
   }
 
@@ -286,9 +286,9 @@ function renderRiskSection(analysis: AnalysisArtifact): string[] {
   const risks = analysis.risks;
   if (!risks) return ["_Risk scoring was not performed._"];
 
-  const levelEmoji = { low: "🟢", medium: "🟡", high: "🟠", critical: "🔴" };
+  const levelBadge = { low: "Low", medium: "Medium", high: "High", critical: "Critical" };
   const lines: string[] = [
-    `**Risk Level: ${levelEmoji[risks.level]} ${risks.level.toUpperCase()} (score: ${risks.total}/100)**`,
+    `**Risk Level: ${levelBadge[risks.level]} (score: ${risks.total}/100)**`,
     "",
     "### Hotspots",
     "| Category | Label | Score | Description |",
@@ -310,16 +310,16 @@ function renderScenariosSection(analysis: AnalysisArtifact): string[] {
   const seeds = analysis.scenarios ?? [];
   if (seeds.length === 0) return ["_No scenario seeds were generated._"];
 
-  const kindEmoji: Record<string, string> = {
-    "happy-path": "✅",
-    "edge-case": "⚡",
-    "abuse-failure": "❌",
-    "regression": "🔄",
+  const kindLabel: Record<string, string> = {
+    "happy-path": "Happy path",
+    "edge-case": "Edge case",
+    "abuse-failure": "Abuse / failure",
+    regression: "Regression",
   };
 
   const lines: string[] = ["| Kind | Title | Given | When | Then |", "|---|---|---|---|---|"];
   for (const seed of seeds) {
-    lines.push(`| ${kindEmoji[seed.kind] ?? ""} ${seed.kind} | ${truncate(seed.title, 50)} | ${truncate(seed.given, 60)} | ${truncate(seed.when, 60)} | ${truncate(seed.then, 60)} |`);
+    lines.push(`| ${kindLabel[seed.kind] ?? seed.kind} | ${truncate(seed.title, 50)} | ${truncate(seed.given, 60)} | ${truncate(seed.when, 60)} | ${truncate(seed.then, 60)} |`);
   }
 
   return lines;
@@ -333,7 +333,7 @@ function renderContradictionsSection(analysis: AnalysisArtifact): string[] {
     lines.push("- No contradictions detected across source files.");
   } else {
     for (const item of items) {
-      lines.push(`- ❌ **${item.description}**`);
+      lines.push(`- Conflict — **${item.description}**`);
       lines.push(`  - Statement A (_${item.sourceA}_): "${truncate(item.statementA, 80)}"`);
       lines.push(`  - Statement B (_${item.sourceB}_): "${truncate(item.statementB, 80)}"`);
     }
@@ -354,18 +354,18 @@ function renderValidationSection(analysis: AnalysisArtifact): string[] {
   const validation = analysis.validationResult;
   if (!validation) return ["_Validation was not run._"];
 
-  const statusEmoji: Record<string, string> = { pass: "✅", warn: "⚠️", fail: "❌" };
-  const scoreLabel = validation.score >= 80 ? "🟢" : validation.score >= 60 ? "🟡" : "🔴";
+  const statusLabel: Record<string, string> = { pass: "PASS", warn: "WARN", fail: "FAIL" };
+  const scoreLabel = validation.score >= 80 ? "Strong" : validation.score >= 60 ? "Moderate" : "Weak";
 
   const lines: string[] = [
-    `**Score: ${scoreLabel} ${validation.score}/100** — ✅ ${validation.passCount} pass | ⚠️ ${validation.warnCount} warn | ❌ ${validation.failCount} fail`,
+    `**Score: ${scoreLabel} ${validation.score}/100** — ${validation.passCount} pass | ${validation.warnCount} warn | ${validation.failCount} fail`,
     "",
     "| Rule | Status | Detail |",
     "|---|---|---|",
   ];
 
   for (const check of validation.checks) {
-    lines.push(`| ${check.rule} | ${statusEmoji[check.status]} ${check.status.toUpperCase()} | ${truncate(check.detail, 80)} |`);
+    lines.push(`| ${check.rule} | ${statusLabel[check.status]} | ${truncate(check.detail, 80)} |`);
   }
 
   return lines;

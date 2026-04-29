@@ -11,6 +11,7 @@ This repository produces business-flow diagrams that must stay easy to review, e
 - Keep Mermaid source text-first for compatibility.
 - Use concise English labels with business wording only.
 - Do not use decorative symbols, emoji, or playful labels.
+- Aim for presentation-ready output: rounded containers, high-contrast borders, balanced spacing, and deliberate visual hierarchy.
 
 ## Class system
 
@@ -23,12 +24,13 @@ This repository produces business-flow diagrams that must stay easy to review, e
 
 ## Color system
 
-- Cyan: start and end
-- Blue: standard process steps
-- Amber: decisions and approvals
-- Red: exceptions, rejections, and unresolved alternate paths
-- Gray: external systems and integration-owned behavior
+- Deep navy: start and end nodes
+- Crisp blue: standard process steps
+- Warm amber: decisions and approvals
+- Strong red: exceptions, rejections, and unresolved alternate paths
+- Emerald: external systems and integration-owned behavior
 - Slate: notes and fallback explanations
+- Pastel lane palette: alternate actor swimlanes using soft blue, amber, green, rose, violet, or cyan backgrounds
 
 ## Typography
 
@@ -36,6 +38,8 @@ This repository produces business-flow diagrams that must stay easy to review, e
 - 14px minimum text size
 - sentence-style labels rather than long titles
 - keep labels short enough to remain readable in exported diagrams
+- prefer two-line node labels only when a touchpoint materially helps the reader
+- keep actor names visually stronger than step text in swimlanes
 
 ## Layout rules
 
@@ -44,6 +48,9 @@ This repository produces business-flow diagrams that must stay easy to review, e
 - use stable node IDs such as `START`, `N1`, `D1`, `E1`, `END`
 - use swimlanes only when the owner is explicit in evidence
 - if ownership is uncertain, use a fallback note instead of a guessed swimlane
+- group related steps into visually coherent blocks when the flow is long
+- leave enough spacing so nodes do not feel crowded
+- show integration steps with distinct `external` styling instead of burying them among business nodes
 
 ## Icon system
 
@@ -53,6 +60,26 @@ This repository uses a two-layer icon system:
 2. an extended semantic icon registry with 1,440 deterministic icon tokens documented in `docs/icons/mermaid-icon-library.md`
 
 The semantic registry improves icon selection quality without forcing Mermaid to depend on image nodes.
+
+## Modern diagram recipe
+
+When generating a polished business-flow diagram, apply this order of decisions:
+
+1. choose the main flow direction and keep the happy path visually obvious
+2. decide whether actor ownership is strong enough for swimlanes
+3. assign node classes before writing link styles
+4. select 3 to 8 semantic icon tokens for major node families
+5. use repository SVG references as export metadata
+6. avoid emoji entirely
+
+## Style targets inspired by strong business diagrams
+
+- actor containers should read like deliberate cards, not default clusters
+- borders should be saturated enough to remain visible on export
+- fills should stay soft enough to preserve text contrast
+- edge labels should look like compact pills rather than raw text on lines
+- start/end nodes should act as visual anchors
+- decision nodes should stand out immediately without overwhelming the flow
 
 ## Required references
 

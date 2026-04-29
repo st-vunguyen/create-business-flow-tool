@@ -8,6 +8,10 @@ Use this guide to choose icon tokens that reinforce business meaning without add
 
 Choose icons from business evidence, not from what looks visually attractive.
 
+## Visual priority rule
+
+If a diagram needs visual emphasis, prefer repository icon tokens and SVG references over emoji. Emoji are not allowed as a substitute for business meaning, severity, status, or actor identity.
+
 ## Decision matrix
 
 | Flow situation | Preferred token pattern | Preferred Mermaid class | Fallback export icon | Notes |
@@ -58,3 +62,5 @@ When producing Mermaid packs:
 3. keep Mermaid source text-first
 4. include the physical SVG path from `assets/mermaid-icons/library/` when export-oriented metadata is helpful
 5. use the token choice as design/export metadata, not as a replacement for evidence-backed node labels
+6. prefer icon families that visually differentiate human work, system work, decisions, and data persistence
+7. use icon selection to reinforce visual polish, not to add unsupported behavior
