@@ -7,6 +7,7 @@ export interface RunOptions {
   mode: RunMode;
   includeSwimlane: boolean;
   model?: string;
+  perFlow?: boolean;
 }
 
 export interface ExtractedSource {
@@ -54,6 +55,27 @@ export interface GapItem {
   category: GapCategory;
   description: string;
   evidence?: string;
+}
+
+// ─── Canonical Schema: Data Contracts ───────────────────────────────────────
+
+export interface DataContract {
+  name: string;
+  format: string; // e.g. JSON, CSV, string
+  fields: string[];
+  example?: string;
+  source: string;
+}
+
+// ─── Canonical Schema: Implementation Constraints ────────────────────────────
+
+export type ConstraintSeverity = "never" | "always" | "warning";
+
+export interface ImplementationConstraint {
+  severity: ConstraintSeverity;
+  rule: string;
+  context: string;
+  source: string;
 }
 
 // ─── Canonical Schema: State Machine ─────────────────────────────────────────
@@ -261,6 +283,10 @@ export interface AnalysisArtifact {
   domain?: string;
   /** Domain pack resolved for this flow */
   domainPack?: string;
+  /** P3: data contracts extracted from spec code blocks */
+  dataContracts?: DataContract[];
+  /** P3: implementation constraints (never/always/warning rules) */
+  implementationConstraints?: ImplementationConstraint[];
 }
 
 export interface MermaidNodeTrace {

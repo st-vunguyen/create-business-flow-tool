@@ -1,4 +1,4 @@
-import type { AnalysisArtifact, MermaidArtifact, PermissionEntry, RiskItem, ScenarioSeed, ValidationCheck } from "../types.js";
+import type { AnalysisArtifact, DataContract, ImplementationConstraint, MermaidArtifact, PermissionEntry, RiskItem, ScenarioSeed, ValidationCheck } from "../types.js";
 import {
   MERMAID_VISUAL_STANDARD_LINES,
   buildFallbackSwimlaneDiagram,
@@ -92,6 +92,12 @@ export function renderAnalysisMarkdown(analysis: AnalysisArtifact, normalizedCor
     "- [x] Every table row has traceability",
     "- [x] State machine, permissions, async, risk, scenarios, validation populated",
     "- [x] Output is inside `business-flow/<slug>/02-analysis/`",
+    "",
+    "## 18) Data Contracts",
+    ...renderDataContractsSection(analysis),
+    "",
+    "## 19) Implementation Constraints",
+    ...renderImplementationConstraintsSection(analysis),
     "",
   ].join("\n");
 }
@@ -382,6 +388,7 @@ function listItemsWithPrefix(prefix: string, values: string[], fallback = "Unkno
     return [`- ${prefix}: ${fallback}`];
   }
 
+
   return values.map((value) => `- ${prefix}: ${value}`);
 }
 
@@ -400,3 +407,73 @@ function truncate(value: string, max: number): string {
 function resolveStateLabel(states: { id: string; label: string }[], id: string): string {
   return states.find((s) => s.id === id)?.label ?? id;
 }
+
+// ─── Section 18: Data Contracts ───────────────────────────────────────────────
+
+function renderDataContractsSection(analysis: AnalysisArtifact): string[] {
+  const contracts = analysis.dataContracts ?? [];
+  if (contracts.length === 0) {
+    return ["_No JSON data contracts were detected in the source specs. Add structured code blocks to capture data formats._"];
+  }
+
+  const lines: string[] = [
+    "| Contract | Format | Fields | Source |",
+    "|---|---|---|---|",
+  ];
+
+  for (const contract of contracts) {
+    const fields = contract.fields.slice(0, 8).join(", ");
+    lines.push(`| ${contract.name} | ${contract.format} | ${escapePipes(fields)} | ${contract.source} |`);
+  }
+
+  // Add example blocks for contracts that have them
+  const withExamples = contracts.filter((c): c is DataContract & { example: string } => Boolean(c.example));
+  if (withExamples.length > 0) {
+    lines.push("", "### Contract Examples");
+    for (const contract of withExamples.slice(0, 5)) {
+      lines.push("", `**${contract.name}** (\`${contract.source}\`)`, "```json", contract.example, "```");
+    }
+  }
+
+  return lines;
+}
+
+// ─── Section 19: Implementation Constraints ───────────────────────────────────
+
+function renderImplementationConstraintsSection(analysis: AnalysisArtifact): string[] {
+  const constraints = analysis.implementationConstraints ?? [];
+  if (constraints.length === 0) {
+    return ["_No implementation constraints were detected. Add NEVER/ALWAYS/WARNING rules to the spec for them to appear here._"];
+  }
+
+  const byLevel = new Map<string, ImplementationConstraint[]>([
+    ["never", []],
+    ["always", []],
+    ["warning", []],
+  ]);
+
+  for (const constraint of constraints) {
+    const bucket = byLevel.get(constraint.severity) ?? [];
+    bucket.push(constraint);
+    byLevel.set(constraint.severity, bucket);
+  }
+
+  const lines: string[] = [];
+  const labels: Record<string, string> = {
+    never: "NEVER (hard prohibitions)",
+    always: "ALWAYS (required invariants)",
+    warning: "WARNING (caution rules)",
+  };
+
+  for (const [severity, items] of byLevel.entries()) {
+    if (items.length === 0) continue;
+    lines.push(`### ${labels[severity] ?? severity}`);
+    for (const item of items) {
+      lines.push(`- **[${item.context}]** ${item.rule} _(${item.source})_`);
+    }
+    lines.push("");
+  }
+
+  return lines;
+}
+

@@ -118,10 +118,10 @@ The result should feel modern and presentation-ready, not default Mermaid stylin
 
 ### Init block — copy exactly from `src/core/mermaid-style.ts`
 
-Do not approximate or simplify it.
+Do not approximate or simplify it. The block sets `htmlLabels:true`, which is what makes `<br/>` render as a real line break.
 
 ```mermaid
-%%{init: {"theme":"base","themeVariables":{"primaryColor":"#EFF6FF","primaryTextColor":"#1E3A5F","primaryBorderColor":"#2563EB","lineColor":"#2563EB","secondaryColor":"#FEF9C3","tertiaryColor":"#F0FDF4","edgeLabelBackground":"#FFFFFF","fontSize":"14px"}}}%%
+%%{init: {"theme":"base","flowchart":{"htmlLabels":true,"curve":"basis","nodeSpacing":40,"rankSpacing":56,"padding":28,"diagramPadding":16,"wrappingWidth":280},"themeVariables":{"fontFamily":"Inter, Arial, sans-serif","fontSize":"14px","primaryColor":"#EBF3FF","primaryTextColor":"#0F172A","primaryBorderColor":"#2563EB","lineColor":"#3B82F6","secondaryColor":"#FFFBEB","tertiaryColor":"#F0FDF4","background":"#FFFFFF","mainBkg":"#F8FAFC","clusterBkg":"#F8FAFC","clusterBorder":"#CBD5E1","edgeLabelBackground":"#FFFFFF","nodeBorder":"#CBD5E1"}}}%%
 ```
 
 ### Class definitions — use these exact names
@@ -148,6 +148,17 @@ classDef note fill:#F8FAFC,stroke:#94A3B8,color:#475569,rx:6
 - add touchpoint context only when it clarifies ownership or system interaction
 - do not dump whole sentences from the source into nodes
 - do not use decorative punctuation or emoji
+
+### Line breaks inside labels (CRITICAL)
+
+- **ALWAYS use `<br/>` for line breaks** inside any node or edge label. The init block has `htmlLabels:true`, which is what makes `<br/>` render as a real visual line break.
+- **NEVER use `\n`** (the two-character escape sequence) — it renders as the literal text `\n` and is the most common Mermaid bug.
+- **NEVER embed an actual newline** between the opening `["` and closing `"]` of a label — different renderers treat it inconsistently.
+- Keep each visual line **≤ 28 characters** (≈ 4–6 words). Split longer labels with `<br/>` on a natural word boundary; never split a word.
+- Examples:
+  - GOOD: `N1["Read device_uuid<br/>and device_type"]`
+  - BAD:  `N1["Read device_uuid\nand device_type"]`
+  - BAD:  `N1["Read device_uuid` then a newline then `and device_type"]`
 
 ---
 

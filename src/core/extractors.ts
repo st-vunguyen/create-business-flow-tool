@@ -4,7 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import fg from "fast-glob";
 import xlsxModule from "xlsx";
-import type { ExtractedSource } from "../types.js";
+import type { ConstraintSeverity, DataContract, ExtractedSource, ImplementationConstraint } from "../types.js";
 import { ensureDir, normalizeWhitespace, numberLines, titleCase } from "./utils.js";
 
 const execFile = promisify(execFileCallback);
@@ -170,4 +170,104 @@ async function readSpreadsheet(filePath: string, extension: string): Promise<str
 
   const title = extension === ".csv" || extension === ".tsv" ? "## Sheet: Table" : undefined;
   return [title, ...renderedSheets].filter(Boolean).join("\n\n");
+}
+
+// ─── Implementation Constraint Extraction ─────────────────────────────────────
+
+const CONSTRAINT_PATTERN = /\b(never|always|must not|critical|important|warning|do not|do not use|must be)\b/i;
+const SEVERITY_MAP: Record<string, ConstraintSeverity> = {
+  never: "never",
+  "must not": "never",
+  "do not": "never",
+  "do not use": "never",
+  always: "always",
+  "must be": "always",
+  critical: "warning",
+  important: "warning",
+  warning: "warning",
+};
+
+function resolveSeverity(text: string): ConstraintSeverity {
+  const lower = text.toLowerCase();
+  for (const [keyword, severity] of Object.entries(SEVERITY_MAP)) {
+    if (lower.includes(keyword)) return severity;
+  }
+  return "warning";
+}
+
+export function extractImplementationNotes(sources: ExtractedSource[]): ImplementationConstraint[] {
+  const results: ImplementationConstraint[] = [];
+
+  for (const source of sources) {
+    const lines = source.content.split("\n");
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+      if (CONSTRAINT_PATTERN.test(trimmed) && trimmed.length > 20 && trimmed.length < 400) {
+        results.push({
+          severity: resolveSeverity(trimmed),
+          rule: trimmed.replace(/^[-*]\s*/, ""),
+          context: source.title,
+          source: source.relativePath,
+        });
+      }
+    }
+  }
+
+  // Deduplicate by normalized rule text
+  const seen = new Set<string>();
+  return results.filter((item) => {
+    const key = item.rule.toLowerCase().slice(0, 80);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+// ─── Data Format Extraction ───────────────────────────────────────────────────
+
+const CODE_BLOCK_REGEX = /```(?:json|typescript|javascript|text)?\s*\n([\s\S]*?)```/g;
+const JSON_OBJECT_REGEX = /^\s*[{[]/;
+
+export function extractDataFormats(sources: ExtractedSource[]): DataContract[] {
+  const results: DataContract[] = [];
+
+  for (const source of sources) {
+    const blocks: string[] = [];
+    let match: RegExpExecArray | null;
+    CODE_BLOCK_REGEX.lastIndex = 0;
+
+    while ((match = CODE_BLOCK_REGEX.exec(source.content)) !== null) {
+      const block = match[1].trim();
+      if (block && JSON_OBJECT_REGEX.test(block)) {
+        blocks.push(block);
+      }
+    }
+
+    for (const block of blocks) {
+      try {
+        const parsed = JSON.parse(block) as unknown;
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+          const fields = Object.keys(parsed as Record<string, unknown>);
+          if (fields.length > 0) {
+            const name = fields.join(", ").slice(0, 60);
+            results.push({
+              name,
+              format: "JSON",
+              fields,
+              example: block.slice(0, 300),
+              source: source.relativePath,
+            });
+          }
+        }
+      } catch {
+        // Not valid JSON — skip
+      }
+    }
+  }
+
+  // Limit to 10 most field-rich contracts
+  return results
+    .sort((a, b) => b.fields.length - a.fields.length)
+    .slice(0, 10);
 }

@@ -18,7 +18,7 @@ By default, verification is an internal agent responsibility, not a manual user 
 - [ ] `normalized-spec.md` exists with numbered source lines and relative path prefixes
 
 ### 02-analysis/
-- [ ] All 17 sections present (0 through 17)
+- [ ] All 19 sections present (0 through 19), including 18 Data Contracts and 19 Implementation Constraints
 - [ ] Section 3 table — every row has actor, step, and traceability
 - [ ] Section 6 traceability — every row cites source file + line number
 - [ ] Section 9 gap taxonomy — typed gaps by category; domain pack gaps included

@@ -21,7 +21,7 @@ business-flow/<slug>/
 
 ## Analysis document structure (02-analysis)
 
-The `business-flow-document.md` must begin with `MODE=technical` and contain all 17 sections:
+The `business-flow-document.md` must begin with `MODE=technical` and contain all 19 sections:
 
 | # | Section | Required |
 |---|---|---|
@@ -43,6 +43,8 @@ The `business-flow-document.md` must begin with `MODE=technical` and contain all
 | 15 | Contradictions (+ Cross-Flow Impact) | P2 |
 | 16 | Validation Report | P0 |
 | 17 | Checklist | Always |
+| 18 | Data Contracts | P3 |
+| 19 | Implementation Constraints | P3 |
 
 ## Global quality bar
 
@@ -104,7 +106,7 @@ business-flow/<slug>/debug/**
 ## Completion checklist
 
 - [ ] Supplemental audit artifacts exist under `debug/`
-- [ ] All 17 sections present in `02-analysis/business-flow-document.md`
+- [ ] All 19 sections (0–19) present in `02-analysis/business-flow-document.md`
 - [ ] Every claim evidence-backed
 - [ ] Missing data marked as `Unknown / needs confirmation`
 - [ ] Section 16 validation score ≥ 60

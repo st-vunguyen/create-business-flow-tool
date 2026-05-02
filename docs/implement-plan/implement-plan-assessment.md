@@ -151,7 +151,7 @@ Do not overclaim the unfinished ones.
 If you want current operational details, read:
 
 - `docs/UNIVERSAL_USAGE_GUIDELINES.md`
-- `docs/architecture/SYSTEM_ARCHITECTURE.md`
+- `docs/architecture/ARCHITECTURE.md`
 
 If you want the larger strategic direction, read:
 

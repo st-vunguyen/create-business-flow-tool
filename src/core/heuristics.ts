@@ -1,4 +1,4 @@
-import type { AnalysisArtifact, BusinessFlowStep, CrossFlowImpactItem, ExtractedSource, GapItem, MermaidArtifact, MermaidIconSelection, MermaidNodeTrace } from "../types.js";
+import type { AnalysisArtifact, BusinessFlowStep, CrossFlowImpactItem, DataContract, ExtractedSource, GapItem, ImplementationConstraint, MermaidArtifact, MermaidIconSelection, MermaidNodeTrace } from "../types.js";
 import { compactLines, dedupe, titleCase } from "./utils.js";
 import {
   buildSwimlaneStyleLine,
@@ -6,6 +6,7 @@ import {
   MERMAID_INIT_BLOCK,
   escapeMermaidLabel,
   isExternalTouchpoint,
+  wrapMermaidLabel,
 } from "./mermaid-style.js";
 import { extractStateMachine } from "./state-machine.js";
 import { extractPermissions } from "./permissions.js";
@@ -14,6 +15,7 @@ import { scoreRisks } from "./risk.js";
 import { generateScenarioSeeds } from "./scenario-seeds.js";
 import { detectContradictions } from "./contradiction.js";
 import { loadDomainPack, getDomainGapItems } from "./domain-packs.js";
+import { extractImplementationNotes, extractDataFormats } from "./extractors.js";
 
 const ACTOR_PATTERN = /\b(admin|administrator|user|customer|staff|manager|approver|reviewer|operator|guest|buyer|seller|agent|owner|system|service)\b/i;
 const DECISION_PATTERN = /\b(if|when|unless|whether|otherwise|approved|rejected|valid|invalid|eligible|ineligible|matched|mismatch|unavailable)\b/i;
@@ -138,6 +140,10 @@ export function buildHeuristicAnalysis(slug: string, sources: ExtractedSource[])
   // ── P1: Scenario seed generation ──────────────────────────────────────────────
   const scenarios = generateScenarioSeeds({ ...enrichedArtifact, risks });
 
+  // ── P3: Data contracts and implementation constraints ─────────────────────
+  const dataContracts: DataContract[] = extractDataFormats(sources);
+  const implementationConstraints: ImplementationConstraint[] = extractImplementationNotes(sources);
+
   return {
     title: `${topic} Business Flow Document`,
     topic,
@@ -171,6 +177,8 @@ export function buildHeuristicAnalysis(slug: string, sources: ExtractedSource[])
       permissions,
       risks,
     }),
+    dataContracts: dataContracts.length > 0 ? dataContracts : undefined,
+    implementationConstraints: implementationConstraints.length > 0 ? implementationConstraints : undefined,
   };
 }
 
@@ -486,7 +494,7 @@ function buildSteps(
   const explicitStepLines = candidateLines.filter((line) => /^([\-*]|\d+[.)])\s+/.test(line.text));
   const sourceLines = structuredSteps.length > 0 ? structuredSteps : explicitStepLines.length > 0 ? explicitStepLines : candidateLines.slice(0, 8);
 
-  return sourceLines.slice(0, 12).map((line, index) => {
+  return sourceLines.slice(0, 20).map((line, index) => {
     const cleanText = stripListMarker(line.text);
     const metadata = resolveStepMetadata(cleanText, stepMetadataMap);
     const actor = resolveActor(cleanText, actors) ?? extractActor(cleanText) ?? actors[0] ?? "";
@@ -572,7 +580,7 @@ function buildFlowchartDiagram(analysis: AnalysisArtifact): string {
     if (step.decision !== "-") {
       const decisionNodeId = `D${decisionIndex}`;
       const exceptionNodeId = `E${decisionIndex}`;
-      lines.push(`  ${decisionNodeId}{"${escapeMermaidLabel(step.decision)}"}`);
+      lines.push(`  ${decisionNodeId}{"${wrapMermaidLabel(step.decision, 24)}"}`);
       lines.push(`  ${exceptionNodeId}["Needs confirmation"]`);
       nodeClasses.set(decisionNodeId, "decision");
       nodeClasses.set(exceptionNodeId, "exception");
@@ -623,7 +631,7 @@ function buildSwimlaneDiagram(analysis: AnalysisArtifact): string | undefined {
       if (step.decision !== "-") {
         const decisionNodeId = `D${decisionIndex}`;
         const exceptionNodeId = `E${decisionIndex}`;
-        lines.push(`    ${decisionNodeId}{"${escapeMermaidLabel(step.decision)}"}`);
+        lines.push(`    ${decisionNodeId}{"${wrapMermaidLabel(step.decision, 24)}"}`);
         lines.push(`    ${exceptionNodeId}["Needs confirmation"]`);
         nodeClasses.set(decisionNodeId, "decision");
         nodeClasses.set(exceptionNodeId, "exception");
@@ -668,9 +676,14 @@ function buildSwimlaneDiagram(analysis: AnalysisArtifact): string | undefined {
 }
 
 function buildStepDisplayLabel(step: BusinessFlowStep, includeActor = true): string {
-  const base = includeActor && step.actor ? `${step.actor}: ${step.action}` : step.action;
-  const touchpoint = step.touchpoint && step.touchpoint !== "-" ? `\n${step.touchpoint}` : "";
-  return `${base}${touchpoint}`;
+  const head = includeActor && step.actor ? `${step.actor}: ${step.action}` : step.action;
+  const wrappedHead = wrapMermaidLabel(head, 28);
+
+  if (step.touchpoint && step.touchpoint !== "-") {
+    const wrappedTouchpoint = wrapMermaidLabel(step.touchpoint, 28);
+    return `${wrappedHead}<br/>${wrappedTouchpoint}`;
+  }
+  return wrappedHead;
 }
 
 function buildClassAssignments(nodeClasses: Map<string, string>): string[] {

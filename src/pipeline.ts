@@ -15,14 +15,17 @@ export async function runPipeline(workspaceRoot: string, options: RunOptions): P
   const sourceDir = path.join(outputRoot, "01-source");
   const analysisDir = path.join(outputRoot, "02-analysis");
   const mermaidDir = path.join(outputRoot, "03-mermaid");
+  const perFlowDir = path.join(outputRoot, "04-per-flow");
   const debugDir = path.join(outputRoot, "debug");
 
-  await Promise.all([
+  const dirPromises = [
     ensureDir(sourceDir),
     ensureDir(analysisDir),
     ensureDir(mermaidDir),
     ensureDir(debugDir),
-  ]);
+  ];
+  if (options.perFlow) dirPromises.push(ensureDir(perFlowDir));
+  await Promise.all(dirPromises);
 
   const specRoot = path.resolve(workspaceRoot, options.specDir);
   const sources = await extractSources(specRoot);

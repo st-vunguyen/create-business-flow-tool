@@ -4,7 +4,7 @@
 
 - the task derives actors, triggers, steps, decisions, outcomes from spec files
 - heuristic logic in `src/core/heuristics.ts` needs to change
-- the 17-section business-flow document is being reviewed or improved
+- the 19-section business-flow document is being reviewed or improved
 
 ## Goal
 
@@ -38,7 +38,7 @@ When invoked by an agent:
 4. Build the canonical schema objects above, not just a flat text output.
 5. Use inference only when narrowly supported by nearby text.
 6. Emit `GapItem` entries for missing rules — do not invent rules to fill them.
-7. Render all 17 sections to `02-analysis/business-flow-document.md`.
+7. Render all 19 sections (0–19) to `02-analysis/business-flow-document.md`, including Data Contracts (18) and Implementation Constraints (19).
 8. Also write focused JSON files under `debug/`: `validation.json`, `permissions.json`, `risk.json`.
 9. Write `debug/scenario-seeds.md` as readable Markdown.
 10. Write `debug/run-summary.json` with all generated artifact paths.

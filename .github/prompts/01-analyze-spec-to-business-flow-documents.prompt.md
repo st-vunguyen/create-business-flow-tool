@@ -176,6 +176,10 @@ MODE=technical
 ## 16) Validation Report
 
 ## 17) Checklist
+
+## 18) Data Contracts
+
+## 19) Implementation Constraints
 ```
 
 ---
@@ -302,6 +306,29 @@ Include a final artifact checklist confirming the analysis is:
 - evidence-backed
 - free of invented flow content
 - complete enough for review
+
+### Section 18 — Data Contracts
+Extract and document any structured data payloads found in the spec (JSON code blocks, schema descriptions, API request/response examples).
+
+For each data contract include:
+- **name**: a short label for the contract
+- **format**: `JSON`, `CSV`, `string`, etc.
+- **fields**: list of known field names
+- **example**: the raw code block if available (truncate at 300 chars)
+- **source**: the spec file it came from
+
+If no contracts are found, state: `_No data contracts detected. Add structured JSON blocks to the spec to populate this section._`
+
+### Section 19 — Implementation Constraints
+Extract explicit implementation rules stated in the spec — especially `NEVER`, `ALWAYS`, `must not`, `critical`, `important`, `WARNING`, `do not`.
+
+For each constraint include:
+- **severity**: `never` (hard prohibition) | `always` (required invariant) | `warning` (caution rule)
+- **rule**: the exact or lightly normalized rule text
+- **context**: the module or subsystem the rule applies to
+- **source**: the spec file
+
+Group by severity. If no constraints are found, state: `_No implementation constraints detected._`
 
 ---
 

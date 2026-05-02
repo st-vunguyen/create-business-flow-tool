@@ -1,5 +1,14 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M32 10L54 32L32 54L10 32L32 10Z" fill="#FFF7ED" stroke="#F59E0B" stroke-width="4"/>
-  <path d="M32 24V34" stroke="#B45309" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="32" cy="42" r="2.5" fill="#B45309"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFBEB"/>
+      <stop offset="100%" stop-color="#FEF3C7"/>
+    </linearGradient>
+    <filter id="s" x="-15%" y="-15%" width="130%" height="150%">
+      <feDropShadow dx="0" dy="2.5" stdDeviation="3" flood-color="#D97706" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <path d="M32 8L56 32L32 56L8 32L32 8Z" fill="url(#g)" stroke="#D97706" stroke-width="2.75" stroke-linejoin="round" filter="url(#s)"/>
+  <path d="M32 22V34" stroke="#92400E" stroke-width="3.5" stroke-linecap="round"/>
+  <circle cx="32" cy="42" r="2.75" fill="#92400E"/>
 </svg>

@@ -1,118 +1,122 @@
-# Documentation Guide
+# Documentation Index
 
-This folder explains the **idea**, **requirements**, **architecture**, **implementation plan**, and **day-to-day usage** of the Business Flow Tool.
+Complete documentation for the **Business Flow Tool** — a spec-first QC and analysis platform that reads specification files and produces traceable, evidence-backed business-flow artifacts.
 
-## Start here
+The repo-level [README](../README.md) is the quick start. This page is the deep-dive index.
 
-If you know nothing about the repository, read in this order:
+---
 
-1. `requirements/PRODUCT_REQUIREMENT_DOCUMENT.md`
-   - What problem the tool solves
-   - Who it is for
-   - What outputs it should produce
-2. `architecture/SYSTEM_ARCHITECTURE.md`
-   - How the repository is structured
-   - How the runtime pipeline works
-   - Which source files own which responsibilities
-3. `UNIVERSAL_USAGE_GUIDELINES.md`
-   - How to prepare specs
-   - Which command to run
-   - How to read the outputs
-   - How to iterate when gaps remain
-4. `implement-plan/implement-plan.md`
-   - The long-term product and engineering direction
-   - The target capability model behind the project
-5. `implement-plan/implement-plan-assessment.md`
-   - The current maturity level versus the larger vision
-   - What is already implemented and what is still missing
+## Start here (recommended reading order)
 
-## What this repository is
+| Step | File | What you learn |
+|---|---|---|
+| 1 | [requirements/PRODUCT_REQUIREMENT_DOCUMENT.md](requirements/PRODUCT_REQUIREMENT_DOCUMENT.md) | What problem the tool solves, who it is for, what outputs it produces |
+| 2 | [architecture/ARCHITECTURE.md](architecture/ARCHITECTURE.md) | Repository structure, runtime pipeline, module dependencies |
+| 3 | [UNIVERSAL_USAGE_GUIDELINES.md](UNIVERSAL_USAGE_GUIDELINES.md) | How to prepare specs, run the tool, read outputs, iterate |
+| 4 | [WORKFLOWS.md](WORKFLOWS.md) | Step-by-step workflows for analysts, CI, LLM enrichment, verifiers |
+| 5 | [ROADMAP.md](ROADMAP.md) | What is implemented today, what is planned, known limitations |
 
-This repository is a **spec-first business-flow analysis tool**.
+---
 
-It takes mixed specification files from `specs/<project>/` and turns them into:
+## What lives where
 
-- a normalized source corpus
-- a structured business-flow analysis document
-- a Mermaid diagram pack
-- optional debug artifacts for validation, traceability, and machine-readable review
+### Architecture
 
-The tool is designed for:
+| File | Description |
+|---|---|
+| [architecture/ARCHITECTURE.md](architecture/ARCHITECTURE.md) | System architecture, principles, module graph, runtime data flow, heuristic engine design |
 
-- business analysts
-- quality-control analysts
-- solution designers
-- engineers who need to understand messy requirements quickly
+### Reference (technical specifications)
 
-## What it is not
+| File | Description |
+|---|---|
+| [reference/CONTRACTS.md](reference/CONTRACTS.md) | Every TypeScript interface in `src/types.ts` documented |
+| [reference/EXECUTION-LIFECYCLE.md](reference/EXECUTION-LIFECYCLE.md) | The 10-phase pipeline lifecycle: phases, inputs, outputs, error conditions |
+| [reference/PIPELINES.md](reference/PIPELINES.md) | All 4 execution modes, optional flags, heuristic engine internals, domain packs |
+| [reference/INTEROPERABILITY-STANDARD.md](reference/INTEROPERABILITY-STANDARD.md) | External integration rules: file intake, LLM API contract, Mermaid output, CI, gitignore |
+| [reference/VALIDATION-GOVERNANCE.md](reference/VALIDATION-GOVERNANCE.md) | All validation checks (C1–C15, M1–M3), scoring formula, governance rules |
+| [reference/RECOVERY-POLICY.md](reference/RECOVERY-POLICY.md) | Failure categories, error messages, recovery steps, validation thresholds |
 
-This repository is **not** a code generator for product features.
+### Usage and planning
 
-Its job is to:
+| File | Description |
+|---|---|
+| [UNIVERSAL_USAGE_GUIDELINES.md](UNIVERSAL_USAGE_GUIDELINES.md) | Day-to-day usage guide |
+| [WORKFLOWS.md](WORKFLOWS.md) | End-to-end workflows for the analyst, CI gate, LLM enrichment, verifier |
+| [ROADMAP.md](ROADMAP.md) | Product roadmap, current capabilities, planned improvements |
 
-- understand specifications
-- clarify business behavior
-- expose ambiguity and contradictions
-- produce reviewable documentation artifacts
+### Mermaid icon system
 
-Its job is **not** to:
+| File | Description |
+|---|---|
+| [icons/mermaid-visual-standard.md](icons/mermaid-visual-standard.md) | Canonical visual standard: palette, CSS classes, swimlane colors, style rules |
+| [icons/mermaid-icon-guidelines.md](icons/mermaid-icon-guidelines.md) | Rules for selecting and using semantic icon tokens |
+| [icons/mermaid-icon-library.md](icons/mermaid-icon-library.md) | Full token library listing with domain groupings |
+| [icons/mermaid-icon-catalog.md](icons/mermaid-icon-catalog.md) | Catalog with usage examples |
+| [icons/mermaid-icon-gallery.md](icons/mermaid-icon-gallery.md) | Visual gallery (Markdown) |
+| `icons/mermaid-icon-gallery.html` | Visual gallery (HTML) |
 
-- implement the product itself
-- invent missing requirements
-- replace source specifications as the system of record
+### Implementation plan and requirements
 
-## Current output model
+| File | Description |
+|---|---|
+| [implement-plan/implement-plan.md](implement-plan/implement-plan.md) | Long-term product and engineering direction |
+| [implement-plan/implement-plan-assessment.md](implement-plan/implement-plan-assessment.md) | Current maturity vs. target capability model |
+| [requirements/PRODUCT_REQUIREMENT_DOCUMENT.md](requirements/PRODUCT_REQUIREMENT_DOCUMENT.md) | Full product requirements document |
 
-For each run, the main user-facing artifacts are:
+---
 
-- `business-flow/<slug>/01-source/normalized-spec.md`
-- `business-flow/<slug>/02-analysis/business-flow-document.md`
-- `business-flow/<slug>/03-mermaid/business-flow-mermaid.md`
+## Root-level files (not in `docs/`)
 
-Supporting runtime and audit artifacts are grouped under:
+| File | Description |
+|---|---|
+| [../README.md](../README.md) | Quick-start guide, command reference, output structure |
+| [../AGENTS.md](../AGENTS.md) | Canonical instructions for AI agents operating in this repo |
+| [../CLAUDE.md](../CLAUDE.md) | Claude-specific behavior rules (extends `AGENTS.md`) |
+| [../CONTRIBUTING.md](../CONTRIBUTING.md) | Development setup, how to add engines and domain packs, PR checklist |
 
-- `business-flow/<slug>/debug/`
+---
 
-Examples:
+## Folder map
 
-- `debug/analysis.prompt.md`
-- `debug/mermaid.prompt.md`
-- `debug/validation.json`
-- `debug/permissions.json`
-- `debug/risk.json`
-- `debug/scenario-seeds.md`
-- `debug/run-summary.json`
+```text
+docs/
+├── README.md                               ← this file
+├── ROADMAP.md                              ← product roadmap
+├── WORKFLOWS.md                            ← end-to-end workflows
+├── UNIVERSAL_USAGE_GUIDELINES.md           ← day-to-day usage
+├── architecture/
+│   └── ARCHITECTURE.md                     ← system architecture
+├── reference/
+│   ├── CONTRACTS.md
+│   ├── EXECUTION-LIFECYCLE.md
+│   ├── INTEROPERABILITY-STANDARD.md
+│   ├── PIPELINES.md
+│   ├── RECOVERY-POLICY.md
+│   └── VALIDATION-GOVERNANCE.md
+├── icons/
+│   ├── mermaid-visual-standard.md
+│   ├── mermaid-icon-guidelines.md
+│   ├── mermaid-icon-library.md
+│   ├── mermaid-icon-catalog.md
+│   ├── mermaid-icon-gallery.md
+│   └── mermaid-icon-gallery.html
+├── implement-plan/
+│   ├── implement-plan.md
+│   └── implement-plan-assessment.md
+└── requirements/
+    └── PRODUCT_REQUIREMENT_DOCUMENT.md
+```
+
+---
 
 ## Documentation principles
 
-The documents in this folder follow these rules:
+Every doc in this folder follows these rules:
 
-- describe the repository as it actually works today
-- separate **current behavior** from **future intent**
-- make the reading path easy for a new contributor
-- prefer precise file paths and source-of-truth references over vague descriptions
+- describe the repository **as it works today**, separating current behavior from future intent
+- use **precise file paths** and source-of-truth references over vague descriptions
+- prefer short tables and concrete examples over long prose
+- keep the reading path easy for new contributors
 
-## Related source-of-truth files outside `docs/`
-
-- `README.md` — concise repo-level overview
-- `AGENTS.md` — workspace instructions and mission
-- `.github/prompts/` — prompt source of truth used by the runtime and agents
-- `.claude/` — repo-local rules, skills, and agents for business-flow analysis
-
-## Recommended onboarding workflow
-
-If you are using the repository as an end user:
-
-1. put specs in `specs/<project>/`
-2. ask `Copilot Chat` or `Claude` to run the full business-flow pipeline
-3. review the outputs in `business-flow/<slug>/`
-
-If you are new to the repository as a contributor:
-
-1. read this file
-2. read the PRD
-3. read the architecture doc
-4. scan `src/cli.ts`, `src/pipeline.ts`, and `src/core/`
-5. run the sample test
-6. run the tool on a small spec folder
-7. inspect the three main artifacts and the `debug/` folder
+If you find a stale reference, prefer fixing the doc to working around it.

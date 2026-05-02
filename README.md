@@ -1,264 +1,207 @@
 # Business Flow Tool
 
-Turn messy specifications into a traceable business-flow document pack and Mermaid diagram pack.
+> Turn fragmented specifications into a traceable, evidence-backed **19-section business-flow document** plus **Mermaid diagram pack** — in one command.
 
-This repository is a **spec-first QC and analysis tool** for teams who need to understand business behavior before implementation. It reads mixed-format source files from `specs/`, normalizes them into an evidence-backed corpus, extracts a structured business flow, and renders review-friendly Markdown plus Mermaid outputs.
+A spec-first QC and analysis platform. Drop your raw specs into a folder, run one command, and get a clean review-ready artifact pack you can hand to product, engineering, or QA.
 
-## Why this repository exists
+---
 
-Real-world requirements rarely arrive as one clean PRD. They are usually spread across:
+## Why this tool
 
-- product documents
-- meeting notes
-- spreadsheets
-- API contracts
-- PDFs and Word files
-- clarification files added later
+Real-world requirements rarely arrive as one clean PRD. They spread across PRDs, meeting notes, spreadsheets, API contracts, PDFs, and Word files. This tool reads all of that and answers, in a single consistent pack:
 
-This tool helps convert that fragmented input into a consistent artifact pack that answers questions such as:
+- What starts the flow? Who does what? What decisions and exception paths exist?
+- What states, permissions, async events, and external dependencies are involved?
+- Where are the gaps, risks, contradictions, and data-contract assumptions?
 
-- what starts the flow?
-- who does what?
-- what decisions and exception paths exist?
-- what states and permissions matter?
-- where are the gaps, risks, and contradictions?
+Every claim is traceable back to a numbered line in the source corpus. Nothing is invented.
 
-## What you get
+---
 
-For each run, the repository produces three primary artifacts:
-
-- `business-flow/<slug>/01-source/normalized-spec.md`
-- `business-flow/<slug>/02-analysis/business-flow-document.md`
-- `business-flow/<slug>/03-mermaid/business-flow-mermaid.md`
-
-It also writes supporting audit and runtime artifacts under:
-
-- `business-flow/<slug>/debug/`
-
-## Quick example
+## How it works (3 steps)
 
 ```text
-specs/sample/
-  checkout-flow.md
-  touchpoints.csv
-
-↓
-
-business-flow/sample/
-├── 01-source/
-│   └── normalized-spec.md
-├── 02-analysis/
-│   └── business-flow-document.md
-├── 03-mermaid/
-│   └── business-flow-mermaid.md
-└── debug/
-    ├── analysis.prompt.md
-    ├── mermaid.prompt.md
-    ├── validation.json
-    ├── permissions.json
-    ├── risk.json
-    ├── scenario-seeds.md
-    └── run-summary.json
+specs/<project>/        →   business-flow/<slug>/
+(your raw files)            01-source/      ← numbered evidence corpus
+                            02-analysis/    ← 19-section business-flow document
+                            03-mermaid/     ← flowchart + swimlane + state diagram
+                            debug/          ← validation, risk, permissions, prompts
 ```
 
-## Core capabilities
+1. Drop spec files (any mix of `.md`, `.docx`, `.pdf`, `.xlsx`, `.csv`, `.json`, …) into `specs/<project>/`.
+2. Run the pipeline.
+3. Review the artifact pack under `business-flow/<slug>/`.
 
-- normalize multi-format spec inputs into a numbered source corpus
-- extract a structured business-flow analysis artifact
-- generate Mermaid flow diagrams from that analysis
-- surface validation, permissions, risk, and scenario-supporting artifacts
-- keep outputs traceable to the source material
-- support semantic icon metadata for Mermaid-oriented outputs
+---
 
-## Supported input formats
+## Install
 
-- `md`, `markdown`, `txt`
-- `doc`, `docx`
-- `pdf`
-- `xlsx`, `xls`, `csv`, `tsv`
-- `json`
-
-## How the pipeline works
-
-```text
-specs/
-  ↓
-normalized source corpus
-  ↓
-business-flow analysis
-  ↓
-Mermaid diagram pack
-  ↓
-debug and validation artifacts
-```
-
-Canonical flow:
-
-```text
-specs/ -> business-flow/<slug>/01-source -> business-flow/<slug>/02-analysis -> business-flow/<slug>/03-mermaid
-```
-
-## Installation
-
-`node_modules/` and `dist/` are intentionally not committed.
-
-- `node_modules/` is recreated from `package.json` and `pnpm-lock.yaml`
-- `dist/` is generated automatically by the `prepare` script during `pnpm install`
-
-From a fresh clone:
+Requires **Node.js ≥ 18** and **pnpm ≥ 10**.
 
 ```bash
 corepack enable
 pnpm install --frozen-lockfile
-pnpm run doctor
+pnpm run doctor       # confirm runtime is ready
 ```
 
-If `corepack` is already enabled on your machine, `pnpm install --frozen-lockfile` is enough.
+`dist/` is rebuilt automatically by the `prepare` script during install — nothing else to do.
+
+---
 
 ## Quick start
 
-1. Put your source material under `specs/<project>/`
-2. Use the repository prompt with `Copilot Chat` or `Claude`
-3. Let the assistant run the workflow and produce the artifact pack under `business-flow/<slug>/`
-
-That is the default user experience. The assistant should handle the intermediate steps.
-
-## Start in one command
-
-If you want to run the local pipeline yourself, this is the main command:
-
 ```bash
-pnpm run tool -- run --spec-dir specs/<project> --slug <slug> --mode heuristic
+# 1. Place your spec files anywhere under specs/<project>/
+# 2. Run the heuristic pipeline (deterministic, no API key required)
+pnpm run tool -- run --spec-dir specs/<project> --slug my-project --mode heuristic
+
+# 3. Review the generated artifacts
+open business-flow/my-project/02-analysis/business-flow-document.md
+open business-flow/my-project/03-mermaid/business-flow-mermaid.md
 ```
 
-If you prefer the built artifact after install, use the compiled CLI because `pnpm install` generates `dist/` automatically:
+> Working with `Copilot Chat` or `Claude`? Just say:
+> *"Run the full business-flow pipeline for `specs/<project>` and produce the final artifact pack under `business-flow/<slug>/`."*
+> The assistant will handle the run, enrichment, and verification.
 
-```bash
-pnpm run tool:dist -- run --spec-dir specs/<project> --slug <slug> --mode heuristic
-```
+---
 
-For a quick runtime summary:
+## Commands
 
-```bash
-pnpm run doctor
-```
+| Command | Description |
+|---|---|
+| `pnpm run tool -- run --spec-dir <path> --slug <slug> --mode heuristic` | Deterministic local pipeline (recommended) |
+| `pnpm run tool -- run ... --mode auto` | Use LLM if `OPENAI_API_KEY` is set, else heuristic |
+| `pnpm run tool -- run ... --mode dry-run` | Write analysis prompt only, no artifacts |
+| `pnpm run tool -- run ... --per-flow` | Generate per-sub-flow output in `04-per-flow/` |
+| `pnpm run tool -- run ... --no-swimlane` | Skip swimlane diagram |
+| `pnpm run tool -- doctor` | Show runtime capability summary |
+| `pnpm run lint` | TypeScript type check |
+| `pnpm run build` | Compile to `dist/` |
+| `pnpm run test` | Run end-to-end smoke test |
 
-## Advanced CLI usage
+---
 
-Use `docs/UNIVERSAL_USAGE_GUIDELINES.md` for:
+## Output: the 19-section analysis document
 
-- all CLI modes and options
-- `auto`, `heuristic`, `llm`, and `dry-run`
-- detailed output interpretation
-- iteration and review guidance
+Every run produces `02-analysis/business-flow-document.md` with these sections:
+
+| # | Section | What it captures |
+|---|---|---|
+| 0 | Scope | Topic, goal, domain, in/out of scope |
+| 1 | Source | Source files and corpus anchor |
+| 2 | Business Flow Summary | Goal, actors, trigger, outcomes, touchpoints |
+| 3 | Business Flow Table | One row per business step |
+| 4 | Narrative Flow | Numbered prose restatement |
+| 5 | Decisions and Exceptions | All branches and exception paths |
+| 6 | Traceability | Each row → source file + line |
+| 7 | Questions | Missing information for stakeholders |
+| 8 | Assumptions | Minimal labeled assumptions |
+| 9 | Gap Taxonomy | Typed gaps grouped by category |
+| 10 | State Machine | States, transitions, state diagram |
+| 11 | Permissions | Role-action-access matrix, conflicts, gaps |
+| 12 | Async Events | Events table + external dependencies |
+| 13 | Risk Hotspots | Weighted score 0–100, level, hotspot list |
+| 14 | Scenario Seeds | happy-path / edge-case / abuse / regression |
+| 15 | Contradictions | Conflicting rules + cross-flow impacts |
+| 16 | Validation Report | Structured pass/warn/fail checks |
+| 17 | Checklist | Final artifact checklist |
+| 18 | Data Contracts | JSON/data formats from code blocks |
+| 19 | Implementation Constraints | NEVER / ALWAYS / WARNING rules |
+
+---
+
+## Supported input formats
+
+| Format | Extensions |
+|---|---|
+| Markdown | `.md`, `.markdown` |
+| Plain text | `.txt` |
+| Word | `.docx`, `.doc` (`.doc` requires macOS `textutil`) |
+| PDF | `.pdf` |
+| Spreadsheet | `.xlsx`, `.xls`, `.csv`, `.tsv` |
+| JSON | `.json` |
+
+---
 
 ## Execution modes
 
-- `heuristic`: local deterministic pipeline, no API key required
-- `auto`: resolves to `llm` when `OPENAI_API_KEY` is present, otherwise falls back to `heuristic`
-- `llm`: uses an OpenAI-compatible chat completions configuration
-- `dry-run`: prepares normalized inputs and prompt/debug artifacts without a full final generation path
-
-## Using `Copilot Chat` or `Claude`
-
-If you already work inside `Copilot Chat`, `Claude`, or a similar agentic coding assistant, you usually do **not** need these environment variables.
-
-The intended experience is:
-
-1. put specs in `specs/<project>/`
-2. give one short instruction to the assistant
-3. the assistant runs the pipeline, reads the artifacts, applies the prompts, performs verification, and leaves the final outputs in `business-flow/<slug>/`
-
-The repository is designed so the assistant handles the intermediate steps for you.
-
-### Recommended instruction for `Copilot Chat` or `Claude`
-
-Use a short instruction like this:
-
-```text
-Run the full business-flow pipeline for `specs/<project>` and produce the final artifact pack under `business-flow/<slug>/`.
-Use the repository prompts, rules, and verifier automatically. Do the intermediate steps yourself and only return the final status, key gaps, and output paths.
-```
-
-### Best practice when using assistants
-
-- keep your human instruction short
-- let the assistant run `heuristic`, inspect artifacts, apply prompts, and verify results on its own
-- treat `01-source/normalized-spec.md` as the evidence anchor whenever reviewing output quality
-- only ask for manual deep review when you intentionally want to override the default autonomous run
-
-Optional `llm` configuration is documented in `docs/UNIVERSAL_USAGE_GUIDELINES.md`.
-
-## Understanding the output pack
-
-| Output | Purpose |
+| Mode | Behavior |
 |---|---|
-| `01-source/normalized-spec.md` | Traceable normalized source corpus |
-| `02-analysis/business-flow-document.md` | Main business-flow analysis document |
-| `03-mermaid/business-flow-mermaid.md` | Main Mermaid diagram pack |
-| `debug/` | Supporting validation, risk, permissions, scenarios, and prompt snapshots |
+| `heuristic` | Fully deterministic. Uses regex, pattern matching, and domain packs. **Recommended default.** |
+| `llm` | Uses an OpenAI-compatible API to enrich analysis. Requires `OPENAI_API_KEY`. |
+| `auto` | Picks `llm` if `OPENAI_API_KEY` is set, otherwise `heuristic`. |
+| `dry-run` | Writes the analysis prompt only; no analysis document. |
 
-Use the first three as the primary review pack. Use `debug/` only when you need deeper audit, automation, or prompt inspection.
-
-## Project structure
-
-```text
-src/                         # CLI and runtime pipeline
-src/core/                    # extractors, heuristics, renderers, validators, risk, permissions, async modeling
-specs/                       # local input specs (gitignored)
-business-flow/               # local generated artifacts (gitignored)
-tests/fixtures/specs/sample/ # sample specs for smoke tests
-docs/                        # onboarding, requirements, architecture, implementation plan, icon guidance
-.github/prompts/             # prompt source of truth
-.claude/                     # repo-local business-flow rules, skills, agents
-```
-
-## Development commands
+Optional LLM environment:
 
 ```bash
-pnpm run lint
-pnpm run build
-pnpm run test
+export OPENAI_API_KEY=sk-...
+export OPENAI_MODEL=gpt-4.1-mini       # optional
+export OPENAI_BASE_URL=https://...     # optional
 ```
 
-## Extractor notes
+---
 
-- `.docx` uses `mammoth`
-- `.pdf` uses `pdf-parse`
-- `.xlsx`, `.xls`, `.csv`, `.tsv` use `xlsx`
-- `.doc` uses `textutil` on macOS
+## Repository layout
 
-## Documentation map
+```text
+.
+├── README.md            ← you are here
+├── AGENTS.md            ← canonical instructions for AI agents
+├── CLAUDE.md            ← Claude-specific operating rules
+├── CONTRIBUTING.md      ← contributor guide
+├── package.json
+├── tsconfig.json
+│
+├── src/                 ← CLI + pipeline
+│   ├── cli.ts
+│   ├── pipeline.ts
+│   ├── types.ts
+│   └── core/            ← extractors, heuristics, renderers, validator, risk, …
+│
+├── .github/prompts/     ← versioned prompt contracts
+├── .claude/             ← repo-local rules, skills, agents
+├── assets/mermaid-icons ← semantic SVG icon library
+├── tests/               ← end-to-end smoke test + fixtures
+├── tools/               ← icon-library generator
+├── docs/                ← all reference documentation (see docs/README.md)
+│
+├── specs/               ← LOCAL ONLY — your input specs (gitignored)
+└── business-flow/       ← LOCAL ONLY — generated artifacts (gitignored)
+```
 
-If you are new to the repository, read these next:
+`specs/` and `business-flow/` are deliberately gitignored — they hold your private input and generated output.
 
-1. `docs/README.md`
-2. `docs/requirements/PRODUCT_REQUIREMENT_DOCUMENT.md`
-3. `docs/architecture/SYSTEM_ARCHITECTURE.md`
-4. `docs/UNIVERSAL_USAGE_GUIDELINES.md`
-5. `docs/implement-plan/implement-plan.md`
-6. `docs/implement-plan/implement-plan-assessment.md`
+---
 
-## Visual standards and icon system
+## Documentation
 
-Key references:
+The full documentation lives in [`docs/`](docs/). Start with [`docs/README.md`](docs/README.md).
 
-- `docs/icons/mermaid-icon-library.md`
-- `docs/icons/mermaid-icon-guidelines.md`
-- `docs/icons/mermaid-icon-catalog.md`
-- `docs/icons/mermaid-icon-gallery.md`
-- `docs/icons/mermaid-icon-gallery.html`
-- `assets/mermaid-icons/semantic-icon-taxonomy.json`
-- `assets/mermaid-icons/library/`
+| If you want to… | Read |
+|---|---|
+| Understand the product | [`docs/requirements/PRODUCT_REQUIREMENT_DOCUMENT.md`](docs/requirements/PRODUCT_REQUIREMENT_DOCUMENT.md) |
+| Understand the architecture | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
+| Use the tool day-to-day | [`docs/UNIVERSAL_USAGE_GUIDELINES.md`](docs/UNIVERSAL_USAGE_GUIDELINES.md) |
+| Follow workflows | [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md) |
+| See the runtime lifecycle | [`docs/reference/EXECUTION-LIFECYCLE.md`](docs/reference/EXECUTION-LIFECYCLE.md) |
+| Learn the type contracts | [`docs/reference/CONTRACTS.md`](docs/reference/CONTRACTS.md) |
+| Learn validation rules | [`docs/reference/VALIDATION-GOVERNANCE.md`](docs/reference/VALIDATION-GOVERNANCE.md) |
+| Contribute | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| See the roadmap | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
 
-Generated business-flow and Mermaid artifacts should remain English-only, easy to review, visually consistent, and semantically traceable.
+---
 
-## Local-only directories
+## Local-only data
 
-- `specs/` is local input only and must not be pushed
-- `business-flow/` is local generated output only and must not be pushed
-- `.gitignore` enforces both conventions for normal local use
+- `specs/` — your input only. Never push.
+- `business-flow/` — your generated output. Never push.
 
-## Current product stance
+Both are enforced in `.gitignore`.
 
-Today, the strongest path is the local heuristic pipeline plus clear prompt contracts and debug artifacts. The repository already works well as a **spec-to-business-flow QC tool**, while the longer-term roadmap continues to push toward deeper reasoning and richer analysis.
+---
+
+## License
+
+Internal tool. See repository owner for licensing details.

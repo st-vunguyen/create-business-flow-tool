@@ -1,4 +1,18 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="12" y="12" width="40" height="40" rx="8" fill="#F3F4F6" stroke="#64748B" stroke-width="4"/>
-  <path d="M20 24H44M20 32H44M20 40H34" stroke="#64748B" stroke-width="4" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#D1FAE5"/>
+      <stop offset="100%" stop-color="#ECFDF5"/>
+    </linearGradient>
+    <filter id="s" x="-10%" y="-12%" width="120%" height="145%">
+      <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" flood-color="#16A34A" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  <!-- Main box representing the external system -->
+  <rect x="7" y="16" width="34" height="32" rx="9" fill="url(#g)" stroke="#16A34A" stroke-width="2.75" filter="url(#s)"/>
+  <!-- Content lines suggesting structured data / service -->
+  <path d="M15 27H33M15 32H33M15 37H25" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Outgoing arrow indicating "external integration" -->
+  <path d="M41 32H56" stroke="#16A34A" stroke-width="3" stroke-linecap="round"/>
+  <path d="M49 25L57 32L49 39" stroke="#16A34A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

@@ -14,6 +14,7 @@ interface RunCommandOptions {
   mode: RunMode;
   model?: string;
   swimlane: boolean;
+  perFlow: boolean;
 }
 
 const __filename = fileURLToPath(import.meta.url);
@@ -35,6 +36,7 @@ program
   .option("--mode <mode>", "Execution mode: auto, llm, heuristic, dry-run", "auto")
   .option("--model <model>", "LLM model name for llm mode")
   .option("--no-swimlane", "Disable swimlane output")
+  .option("--per-flow", "Generate per-sub-flow artifacts in 04-per-flow/")
   .action(async (commandOptions: RunCommandOptions) => {
     const mode = commandOptions.mode as RunMode;
     const result = await runPipeline(workspaceRoot, {
@@ -44,6 +46,7 @@ program
       mode,
       includeSwimlane: commandOptions.swimlane,
       model: commandOptions.model,
+      perFlow: commandOptions.perFlow,
     });
 
     console.log(JSON.stringify(result, null, 2));

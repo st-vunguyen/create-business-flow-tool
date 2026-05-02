@@ -171,7 +171,7 @@ Use it to:
 
 This is the main business-flow document.
 
-It contains 17 sections, including:
+It contains 19 sections (0–19), including:
 
 - scope and source summary
 - flow table and narrative
@@ -183,6 +183,8 @@ It contains 17 sections, including:
 - scenario seeds
 - contradictions
 - validation report
+- data contracts (JSON shapes detected in the spec)
+- implementation constraints (NEVER / ALWAYS / WARNING rules)
 
 This is the main document for analysts, reviewers, and stakeholders.
 
@@ -348,6 +350,7 @@ The runtime snapshots are for debug, audit, and manual reuse. They do not replac
 If you are trying to understand the whole repository, read next:
 
 1. `docs/requirements/PRODUCT_REQUIREMENT_DOCUMENT.md`
-2. `docs/architecture/SYSTEM_ARCHITECTURE.md`
-3. `docs/implement-plan/implement-plan.md`
-4. `docs/implement-plan/implement-plan-assessment.md`
+2. `docs/architecture/ARCHITECTURE.md`
+3. `docs/reference/EXECUTION-LIFECYCLE.md`
+4. `docs/implement-plan/implement-plan.md`
+5. `docs/implement-plan/implement-plan-assessment.md`
