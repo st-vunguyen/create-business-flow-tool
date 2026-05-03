@@ -1,8 +1,34 @@
 # Documentation Index
 
-Complete documentation for the **Business Flow Tool** — a spec-first QC and analysis platform that reads specification files and produces traceable, evidence-backed business-flow artifacts.
+Complete documentation for this **spec-first analysis platform** — reads your spec files and produces traceable, evidence-backed business-flow analysis and test strategy documents.
 
 The repo-level [README](../README.md) is the quick start. This page is the deep-dive index.
+
+> **New to this repo?** Start with [01-vision/WHAT-IS-THIS.md](01-vision/WHAT-IS-THIS.md).
+
+## docs/ structure
+
+```
+docs/
+├── README.md                          ← you are here
+├── 01-vision/
+│   ├── WHAT-IS-THIS.md               ← problem, users, design philosophy
+│   └── DESIGN-PRINCIPLES.md          ← evidence-first, vendor-agnostic, spec-only
+├── 02-architecture/
+│   ├── PLATFORM-ARCHITECTURE.md      ← manifest, canonical dirs, adapter pattern
+│   ├── BUSINESS-FLOW-PIPELINE.md     ← end-to-end business-flow pipeline
+│   ├── TEST-STRATEGY-PIPELINE.md     ← end-to-end test-strategy pipeline (NEW)
+│   └── AI-ASSET-SYSTEM.md            ← agents / rules / skills / prompts explained
+├── 03-how-it-works/
+│   ├── HEURISTIC-ENGINE.md           ← how heuristics.ts works
+│   ├── 19-SECTION-ANALYSIS.md        ← what each analysis section means
+│   ├── 16-SECTION-TEST-STRATEGY.md   ← what each test-strategy section means (NEW)
+│   ├── MERMAID-GENERATION.md         ← how Mermaid artifacts are built
+│   └── SYNC-ADAPTERS.md              ← how tool adapters are generated (NEW)
+├── reference/                         ← contracts, governance, lifecycle
+├── icons/                             ← Mermaid icon catalog and visual standard
+└── ROADMAP.md
+```
 
 ---
 

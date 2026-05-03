@@ -18,6 +18,7 @@
     "generate:icons": "node tools/generate-semantic-icon-library.mjs",
     "lint": "tsc --noEmit -p tsconfig.json",
     "prepare": "pnpm run build",
+    "sync-adapters": "node tools/sync-adapters.mjs",
     "tool": "tsx src/cli.ts",
     "tool:dist": "node dist/cli.js",
     "test": "node --test --import tsx tests/**/*.test.ts"

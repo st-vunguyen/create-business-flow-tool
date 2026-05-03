@@ -1,0 +1,75 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "name": "AI Spec Analysis Platform",
+    "description": "Multi-pipeline, multi-tool platform for converting raw specs into business-flow and test-strategy artifacts.",
+    "version": "0.2.0",
+    "canonical": {
+        "agents": "./agents/",
+        "rules": "./rules/",
+        "skills": "./skills/",
+        "prompts": "./prompts/",
+        "note": "These top-level directories are the single source of truth. Tool adapters (.claude/, .github/prompts/) mirror them — not the other way around."
+    },
+    "pipelines": {
+        "business-flow": {
+            "description": "Reads specs/<project>/ → normalizes corpus → extracts 19-section business-flow document → renders Mermaid diagrams",
+            "agents": "./agents/business-flow/",
+            "skills": [
+                "spec-intake",
+                "analysis-extraction",
+                "mermaid-pack",
+                "verification"
+            ],
+            "prompts": "./prompts/business-flow/",
+            "output": "business-flow/<slug>/",
+            "cliCommand": "pnpm run tool -- run --spec-dir specs/<project> --slug <slug> --mode heuristic"
+        },
+        "test-strategy": {
+            "description": "Reads specs/<project>/ → normalizes corpus → extracts evidence-backed test strategy document with test cases, risk matrix, and regression checklist",
+            "agents": "./agents/test-strategy/",
+            "skills": [
+                "spec-intake",
+                "test-strategy-extraction",
+                "verification"
+            ],
+            "prompts": "./prompts/test-strategy/",
+            "output": "test-strategy/<slug>/",
+            "cliCommand": "pnpm run tool -- test-strategy --spec-dir specs/<project> --slug <slug> --mode heuristic"
+        }
+    },
+    "sharedRules": "./rules/",
+    "toolAdapters": {
+        "claude-code": {
+            "path": "./.claude/",
+            "type": "adapter",
+            "note": "Generated compatibility layer. agents/, rules/, skills/ inside .claude/ mirror canonical top-level directories. Do not edit .claude/ directly — edit canonical sources and sync."
+        },
+        "github-copilot": {
+            "path": "./.github/prompts/",
+            "type": "adapter",
+            "note": "Copilot Chat reads .github/prompts/ for prompt files. Canonical prompts live in ./prompts/ — .github/prompts/ is a compatibility mirror."
+        },
+        "cursor": {
+            "path": "./.cursor/rules/",
+            "type": "adapter",
+            "note": "Future Cursor adapter. Not yet implemented — add .cursor/rules/ mirror when Cursor integration is needed."
+        }
+    },
+    "syncCommand": "node tools/sync-adapters.mjs",
+    "syncNote": "Run this to regenerate all tool adapter files from canonical sources. Replaces symlinks with generated copies for Windows/Docker/CI compatibility.",
+    "gitignored": [
+        "specs/",
+        "business-flow/",
+        "test-strategy/"
+    ],
+    "committed": [
+        "agents/",
+        "rules/",
+        "skills/",
+        "prompts/",
+        "src/",
+        "tools/",
+        "assets/",
+        "docs/"
+    ]
+}

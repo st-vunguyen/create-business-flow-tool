@@ -5,6 +5,7 @@ import { Command } from "commander";
 import { SUPPORTED_EXTENSIONS } from "./core/extractors.js";
 import { resolveExecutionMode } from "./core/llm.js";
 import { runPipeline } from "./pipeline.js";
+import { runTestStrategyPipeline } from "./pipeline-test-strategy.js";
 import type { RunMode } from "./types.js";
 
 interface RunCommandOptions {
@@ -49,6 +50,23 @@ program
       perFlow: commandOptions.perFlow,
     });
 
+    console.log(JSON.stringify(result, null, 2));
+  });
+
+program
+  .command("test-strategy")
+  .description("Run the test-strategy pipeline: spec → 16-section test strategy document")
+  .option("--spec-dir <path>", "Directory containing spec files", "specs")
+  .option("--slug <slug>", "Output slug")
+  .option("--output-root <path>", "Local output root directory (gitignored)", "test-strategy")
+  .option("--mode <mode>", "Execution mode: auto, heuristic, dry-run", "auto")
+  .action(async (commandOptions: { specDir: string; slug?: string; outputRoot: string; mode: RunMode }) => {
+    const result = await runTestStrategyPipeline(workspaceRoot, {
+      specDir: commandOptions.specDir,
+      slug: commandOptions.slug,
+      outputRoot: commandOptions.outputRoot,
+      mode: commandOptions.mode,
+    });
     console.log(JSON.stringify(result, null, 2));
   });
 
